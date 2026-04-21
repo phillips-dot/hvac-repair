@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#080d18">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="냉동공조수리">
+<meta name="mobile-web-app-capable" content="yes">
+<title>냉동공조 수리 기록</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E❄️%3C/text%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23080d18'/%3E%3Ctext y='.9em' x='.05em' font-size='85'%3E❄️%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+:root {
+  --bg: #080d18; --card: #0f1825; --border: #1a2a3a;
+  --accent: #00d4ff; --accent2: #0ea5e9; --success: #10b981;
+  --warning: #f59e0b; --danger: #ef4444;
+  --text: #dde6f0; --muted: #4a6178; --subtle: #1e3248;
+}
+html, body { margin: 0; padding: 0; overscroll-behavior: none; }
+body {
+  background: var(--bg); color: var(--text);
+  font-family: 'Noto Sans KR', -apple-system, sans-serif;
+  padding-bottom: calc(80px + env(safe-area-inset-bottom));
+  padding-top: env(safe-area-inset-top);
+  min-height: 100vh;
+}
+.header {
+  background: linear-gradient(160deg, #050a14, #0a1a2e);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 18px; position: sticky; top: env(safe-area-inset-top); z-index: 100;
+}
+.header h1 { font-size: 17px; font-weight: 800; color: var(--accent); margin: 0; }
+.header p { font-size: 10px; color: var(--muted); margin: 2px 0 0; letter-spacing: 1px; }
+.tabs {
+  display: flex; background: var(--card); border-bottom: 1px solid var(--border);
+  position: sticky; top: calc(57px + env(safe-area-inset-top)); z-index: 99;
+}
+.tab {
+  flex: 1; padding: 11px 2px; font-size: 11px; color: var(--muted);
+  background: none; border: none; border-bottom: 2px solid transparent;
+  cursor: pointer; font-family: inherit;
+}
+.tab.active { color: var(--accent); font-weight: 800; border-bottom-color: var(--accent); }
+.sec { padding: 14px; }
+.card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 14px; margin-bottom: 10px;
+}
+.card.warn { border-color: rgba(245, 158, 11, 0.3); }
+.lbl {
+  font-size: 10px; color: var(--muted); text-transform: uppercase;
+  letter-spacing: 1px; margin-bottom: 6px; display: block; font-weight: 700;
+}
+input, textarea, select {
+  width: 100%; background: var(--subtle); border: 1px solid var(--border);
+  border-radius: 8px; padding: 9px 11px; color: var(--text);
+  font-size: 13px; outline: none; font-family: inherit;
+}
+textarea { min-height: 72px; resize: vertical; }
+.row { display: flex; gap: 8px; }
+.row > * { flex: 1; min-width: 0; }
+.mb8 { margin-bottom: 8px; }
+.mb10 { margin-bottom: 10px; }
+.btn {
+  width: 100%; background: var(--accent); color: #000;
+  border: none; border-radius: 9px; padding: 12px;
+  font-size: 14px; font-weight: 800; cursor: pointer; font-family: inherit;
+}
+.btn.success { background: var(--success); }
+.btn.danger { background: var(--danger); color: #fff; }
+.btn-sm {
+  background: transparent; color: var(--accent); border: 1px solid rgba(0,212,255,0.3);
+  border-radius: 6px; padding: 5px 11px; font-size: 11px; font-weight: 700;
+  cursor: pointer; font-family: inherit;
+}
+.btn-sm.danger { color: var(--danger); border-color: rgba(239,68,68,0.3); }
+.chip {
+  display: inline-block; background: var(--subtle); color: var(--muted);
+  border: 1px solid var(--border); border-radius: 20px;
+  padding: 4px 10px; font-size: 12px; cursor: pointer;
+  margin: 0 4px 6px 0;
+}
+.chip.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 700; }
+.tag {
+  display: inline-flex; align-items: center; border-radius: 20px;
+  padding: 2px 9px; font-size: 10px; font-weight: 700;
+}
+.tag.accent { background: rgba(0,212,255,0.12); color: var(--accent); border: 1px solid rgba(0,212,255,0.25); }
+.tag.warn { background: rgba(245,158,11,0.12); color: var(--warning); border: 1px solid rgba(245,158,11,0.25); }
+.tag.accent2 { background: rgba(14,165,233,0.12); color: var(--accent2); border: 1px solid rgba(14,165,233,0.25); }
+.log-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 13px; margin-bottom: 9px; cursor: pointer;
+}
+.sb { display: flex; justify-content: space-between; align-items: center; }
+.ai-box {
+  background: #05140a; border: 1px solid rgba(16,185,129,0.3);
+  border-radius: 12px; padding: 14px; margin-top: 10px;
+}
+.ai-text {
+  font-size: 13px; line-height: 1.85; color: #86efac; white-space: pre-wrap;
+}
+.empty { text-align: center; padding: 50px 20px; color: var(--muted); }
+.stat-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 14px; text-align: center;
+}
+.stat-n { font-size: 26px; font-weight: 800; color: var(--accent); }
+.stat-l { font-size: 10px; color: var(--muted); margin-top: 3px; }
+.bar-bg { height: 5px; background: var(--subtle); border-radius: 3px; margin: 4px 0 10px; }
+.bar-fg { height: 100%; background: var(--accent); border-radius: 3px; transition: width 0.5s; }
+.bar-fg.warn { background: var(--warning); }
+.filter-row { display: flex; overflow-x: auto; padding-bottom: 6px; margin-bottom: 10px; }
+.filter-row::-webkit-scrollbar { display: none; }
+.chip.nowrap { white-space: nowrap; }
+.photo-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+  margin-bottom: 10px;
+}
+.photo-item {
+  position: relative; aspect-ratio: 1; border-radius: 8px;
+  overflow: hidden; background: var(--subtle); border: 1px solid var(--border);
+}
+.photo-item img {
+  width: 100%; height: 100%; object-fit: cover; display: block; cursor: pointer;
+}
+.photo-item .del-x {
+  position: absolute; top: 4px; right: 4px;
+  background: rgba(239,68,68,0.9); color: #fff;
+  width: 22px; height: 22px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 700; cursor: pointer; border: none;
+}
+.photo-add {
+  aspect-ratio: 1; border-radius: 8px; background: var(--subtle);
+  border: 2px dashed var(--border); display: flex; flex-direction: column;
+  align-items: center; justify-content: center; cursor: pointer;
+  color: var(--muted); font-size: 11px; gap: 4px;
+}
+.photo-add:hover { border-color: var(--accent); color: var(--accent); }
+.photo-add .icon { font-size: 22px; }
+.photo-viewer {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000;
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px; cursor: pointer;
+}
+.photo-viewer img { max-width: 100%; max-height: 100%; }
+.photo-count { font-size: 10px; color: var(--muted); margin-bottom: 6px; }
+.install-banner {
+  background: linear-gradient(135deg, rgba(0,212,255,0.15), rgba(14,165,233,0.15));
+  border: 1px solid rgba(0,212,255,0.3); border-radius: 12px;
+  padding: 12px 14px; margin: 14px; font-size: 12px; display: none;
+  position: relative;
+}
+.install-banner strong { color: var(--accent); }
+.install-banner .close-x {
+  position: absolute; top: 8px; right: 12px; cursor: pointer;
+  color: var(--muted); font-size: 18px;
+}
+.back-btn { margin-bottom: 14px; }
+hr { border: none; border-top: 1px solid var(--border); margin: 7px 0; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>❄️ 냉동공조 수리 기록</h1>
+  <p>HVAC REPAIR LOG · AI DATA ANALYSIS</p>
+</div>
+
+<div class="tabs">
+  <button class="tab active" data-tab="0">📝 기록</button>
+  <button class="tab" data-tab="1">📋 목록</button>
+  <button class="tab" data-tab="2">🤖 AI분석</button>
+  <button class="tab" data-tab="3">📊 통계</button>
+</div>
+
+<div id="install-banner" class="install-banner">
+  <span class="close-x" onclick="document.getElementById('install-banner').style.display='none'">×</span>
+  <strong>📱 홈화면에 설치</strong><br>
+  <span id="install-text"></span>
+</div>
+
+<div id="app"></div>
+
+<script>
+const STORAGE_KEY = 'hvac-repair-logs-v2';
+const API_KEY_STORAGE = 'anthropic-api-key';
+
+const DEVICE_TYPES = ["에어컨(가정용)", "에어컨(상업용)", "냉동창고", "기타 냉동공조"];
+const FAULT_TYPES = ["냉매 부족/누설", "압축기 불량", "팬모터 불량", "전기계통 불량", "열교환기 오염", "팽창밸브 불량", "센서 불량", "드레인 막힘", "기타"];
+const REFRIGERANTS = ["R-22", "R-410A", "R-32", "R-404A", "R-134a", "R-407C", "R-507", "R-438", "기타"];
+const COMMON_PARTS = ["압축기", "팬모터", "팽창밸브", "4방밸브", "고압스위치", "저압스위치", "온도센서", "실내기 PCB", "실외기 PCB", "드레인펌프", "필터", "응축기 코일", "증발기 코일"];
+
+// ── 유틸 ─────────────────────────────────────────────────
+const $ = (sel) => document.querySelector(sel);
+const getLogs = () => { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch { return []; } };
+const saveLogs = (logs) => localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
+const getApiKey = () => localStorage.getItem(API_KEY_STORAGE) || '';
+const setApiKey = (k) => localStorage.setItem(API_KEY_STORAGE, k);
+const fmt = (iso) => {
+  const d = new Date(iso);
+  return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
+};
+const esc = (str) => String(str || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+let currentTab = 0;
+let selectedLog = null;
+let formState = null;
+let filter = '';
+
+// ── 탭 전환 ───────────────────────────────────────────────
+document.querySelectorAll('.tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    currentTab = parseInt(btn.dataset.tab);
+    document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    selectedLog = null;
+    render();
+  });
+});
+
+// ── 기록 폼 ─────────────────────────────────────────────
+function LogForm() {
+  if (!formState) {
+    formState = {
+      date: new Date().toISOString().slice(0,10),
+      deviceType: '', model: '', location: '',
+      faultType: '', symptom: '', cause: '', action: '',
+      parts: [], partsCustom: '',
+      refrigerant: '', refAmount: '',
+      highPressure: '', lowPressure: '',
+      workTime: '', cost: '',
+      specialNote: '', memo: '',
+      photos: []
+    };
+  }
+  const f = formState;
+
+  return `
+    <div class="sec">
+      <div class="card">
+        <span class="lbl">📅 수리 날짜</span>
+        <input type="date" value="${esc(f.date)}" onchange="setField('date', this.value)">
+      </div>
+
+      <div class="card">
+        <span class="lbl">🔧 장비 정보</span>
+        <select class="mb8" onchange="setField('deviceType', this.value)">
+          <option value="">장비 종류 선택 *</option>
+          ${DEVICE_TYPES.map(d => `<option ${f.deviceType === d ? 'selected' : ''}>${d}</option>`).join('')}
+        </select>
+        <input class="mb8" placeholder="모델명 (예: LG 휘센 FQ18)" value="${esc(f.model)}" oninput="setField('model', this.value)">
+        <input placeholder="설치 위치 / 고객명" value="${esc(f.location)}" oninput="setField('location', this.value)">
+      </div>
+
+      <div class="card">
+        <span class="lbl">⚠️ 고장 증상 & 원인</span>
+        <select class="mb8" onchange="setField('faultType', this.value)">
+          <option value="">고장 유형 선택</option>
+          ${FAULT_TYPES.map(ft => `<option ${f.faultType === ft ? 'selected' : ''}>${ft}</option>`).join('')}
+        </select>
+        <textarea class="mb8" placeholder="고장 증상 (필수) *" oninput="setField('symptom', this.value)">${esc(f.symptom)}</textarea>
+        <textarea placeholder="원인 분석" oninput="setField('cause', this.value)">${esc(f.cause)}</textarea>
+      </div>
+
+      <div class="card">
+        <span class="lbl">🛠️ 조치 내용 *</span>
+        <textarea placeholder="수행한 작업 내용" oninput="setField('action', this.value)">${esc(f.action)}</textarea>
+      </div>
+
+      <div class="card">
+        <span class="lbl">📷 사진 첨부 (최대 5장)</span>
+        <div class="photo-count">${f.photos.length} / 5 장</div>
+        <div class="photo-grid">
+          ${f.photos.map((p, i) => `
+            <div class="photo-item">
+              <img src="${p}" onclick="viewPhoto('${p}')">
+              <button class="del-x" onclick="event.stopPropagation();removePhoto(${i})">×</button>
+            </div>
+          `).join('')}
+          ${f.photos.length < 5 ? `
+            <label class="photo-add">
+              <div class="icon">📷</div>
+              <div>사진 추가</div>
+              <input type="file" accept="image/*" capture="environment" style="display:none" onchange="handlePhotoUpload(event)">
+            </label>
+          ` : ''}
+        </div>
+        <div style="font-size:10px;color:var(--muted);line-height:1.5">
+          💡 고장 부위, 수리 전/후, 계기판 등 자유롭게 촬영하세요.<br>
+          사진은 자동으로 압축되어 저장됩니다.
+        </div>
+      </div>
+
+      <div class="card">
+        <span class="lbl">🔩 교체 부품 이력</span>
+        <div class="mb10">
+          ${COMMON_PARTS.map(p => `
+            <span class="chip ${f.parts.includes(p) ? 'active' : ''}" onclick="togglePart('${p}')">${p}</span>
+          `).join('')}
+        </div>
+        <input placeholder="기타 부품 직접 입력 (예: 인버터 모듈)" value="${esc(f.partsCustom)}" oninput="setField('partsCustom', this.value)">
+      </div>
+
+      <div class="card">
+        <span class="lbl">❄️ 냉매 & 압력</span>
+        <div class="row mb8">
+          <select onchange="setField('refrigerant', this.value)">
+            <option value="">냉매 종류</option>
+            ${REFRIGERANTS.map(r => `<option ${f.refrigerant === r ? 'selected' : ''}>${r}</option>`).join('')}
+          </select>
+          <input style="max-width:105px" placeholder="충전량(kg)" value="${esc(f.refAmount)}" oninput="setField('refAmount', this.value)">
+        </div>
+        <div class="row">
+          <input placeholder="고압 (kgf/cm²)" value="${esc(f.highPressure)}" oninput="setField('highPressure', this.value)">
+          <input placeholder="저압 (kgf/cm²)" value="${esc(f.lowPressure)}" oninput="setField('lowPressure', this.value)">
+        </div>
+      </div>
+
+      <div class="card">
+        <span class="lbl">⏱️ 작업 시간 & 비용</span>
+        <div class="row">
+          <input placeholder="작업 시간 (h)" value="${esc(f.workTime)}" oninput="setField('workTime', this.value)">
+          <input placeholder="비용 (원)" value="${esc(f.cost)}" oninput="setField('cost', this.value)">
+        </div>
+      </div>
+
+      <div class="card warn">
+        <span class="lbl">📌 특이사항</span>
+        <textarea class="mb8" placeholder="반복 고장, 주의사항, 다음 점검 필요 등" oninput="setField('specialNote', this.value)">${esc(f.specialNote)}</textarea>
+        <span class="lbl">📝 메모</span>
+        <textarea placeholder="기타 메모" oninput="setField('memo', this.value)">${esc(f.memo)}</textarea>
+      </div>
+
+      <button class="btn" id="save-btn" onclick="saveForm()">💾 수리 기록 저장</button>
+    </div>
+  `;
+}
+
+function setField(key, value) {
+  if (!formState) return;
+  formState[key] = value;
+}
+
+function togglePart(part) {
+  if (!formState) return;
+  if (formState.parts.includes(part)) {
+    formState.parts = formState.parts.filter(p => p !== part);
+  } else {
+    formState.parts = [...formState.parts, part];
+  }
+  render();
+}
+
+// ── 사진 처리 ─────────────────────────────────────────────
+function resizeImage(file, maxWidth = 1200, quality = 0.75) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        let w = img.width, h = img.height;
+        if (w > maxWidth) { h = h * (maxWidth / w); w = maxWidth; }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+async function handlePhotoUpload(event) {
+  const file = event.target.files[0];
+  if (!file || !formState) return;
+  if (formState.photos.length >= 5) { alert('사진은 최대 5장까지 첨부 가능합니다.'); return; }
+  if (!file.type.startsWith('image/')) { alert('이미지 파일만 첨부 가능합니다.'); return; }
+  try {
+    const compressed = await resizeImage(file);
+    formState.photos = [...formState.photos, compressed];
+    render();
+  } catch (e) {
+    alert('사진 처리 중 오류가 발생했습니다: ' + e.message);
+  }
+  event.target.value = '';
+}
+
+function removePhoto(index) {
+  if (!formState) return;
+  if (!confirm('이 사진을 삭제할까요?')) return;
+  formState.photos = formState.photos.filter((_, i) => i !== index);
+  render();
+}
+
+function viewPhoto(src) {
+  const viewer = document.createElement('div');
+  viewer.className = 'photo-viewer';
+  viewer.innerHTML = `<img src="${src}">`;
+  viewer.onclick = () => viewer.remove();
+  document.body.appendChild(viewer);
+}
+
+function saveForm() {
+  const f = formState;
+  if (!f.deviceType || !f.symptom || !f.action) {
+    alert('장비종류, 증상, 조치내용은 필수입니다.');
+    return;
+  }
+  const logs = getLogs();
+  try {
+    saveLogs([{ ...f, id: Date.now(), createdAt: new Date().toISOString() }, ...logs]);
+  } catch (e) {
+    if (e.name === 'QuotaExceededError' || e.code === 22) {
+      alert('⚠️ 저장 공간이 부족합니다.\n오래된 기록을 삭제하거나 사진을 줄여주세요.');
+    } else {
+      alert('저장 중 오류: ' + e.message);
+    }
+    return;
+  }
+  const btn = $('#save-btn');
+  btn.className = 'btn success';
+  btn.textContent = '✅ 저장 완료!';
+  setTimeout(() => {
+    formState = null;
+    render();
+  }, 1400);
+}
+
+// ── 목록 ─────────────────────────────────────────────────
+function LogList() {
+  const logs = getLogs();
+  const filtered = filter ? logs.filter(l => l.deviceType === filter) : logs;
+
+  if (selectedLog) {
+    const sel = selectedLog;
+    const fields = [
+      ['⚠️ 증상', sel.symptom],
+      ['🔍 원인', sel.cause],
+      ['🛠️ 조치내용', sel.action],
+      ['🔩 교체부품', [...(sel.parts || []), sel.partsCustom].filter(Boolean).join(', ')],
+      ['❄️ 냉매', [sel.refrigerant, sel.refAmount ? sel.refAmount + 'kg' : ''].filter(Boolean).join(' ')],
+      ['📊 압력', [sel.highPressure ? '고압: ' + sel.highPressure : '', sel.lowPressure ? '저압: ' + sel.lowPressure : ''].filter(Boolean).join(' / ')],
+      ['⏱️ 작업시간', sel.workTime ? sel.workTime + '시간' : ''],
+      ['💰 비용', sel.cost ? Number(sel.cost).toLocaleString() + '원' : ''],
+      ['📌 특이사항', sel.specialNote],
+      ['📝 메모', sel.memo]
+    ].filter(([, v]) => v);
+
+    return `
+      <div class="sec">
+        <button class="btn-sm back-btn" onclick="selectedLog=null; render()">← 목록</button>
+        <div class="card">
+          <div class="sb" style="margin-bottom:8px">
+            <span class="tag accent">${esc(sel.deviceType)}</span>
+            <span style="color:var(--muted);font-size:11px">${fmt(sel.date)}</span>
+          </div>
+          ${sel.model ? `<div style="font-size:12px;color:var(--muted);margin-bottom:4px">📦 ${esc(sel.model)}</div>` : ''}
+          ${sel.location ? `<div style="font-size:12px;color:var(--muted);margin-bottom:8px">📍 ${esc(sel.location)}</div>` : ''}
+          ${sel.faultType ? `<span class="tag warn">${esc(sel.faultType)}</span>` : ''}
+        </div>
+        ${sel.photos && sel.photos.length > 0 ? `
+          <div class="card">
+            <span class="lbl">📷 첨부 사진 (${sel.photos.length}장)</span>
+            <div class="photo-grid">
+              ${sel.photos.map(p => `
+                <div class="photo-item">
+                  <img src="${p}" onclick="viewPhoto('${p}')">
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        ` : ''}
+        ${fields.map(([k, v]) => `
+          <div class="card ${k === '📌 특이사항' ? 'warn' : ''}">
+            <span class="lbl">${k}</span>
+            <div style="font-size:13px;line-height:1.7">${esc(v)}</div>
+          </div>
+        `).join('')}
+        <button class="btn danger" onclick="deleteLog(${sel.id}, true)">🗑️ 삭제</button>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="sec">
+      <div class="filter-row">
+        ${['', ...DEVICE_TYPES].map(d => `
+          <span class="chip nowrap ${filter === d ? 'active' : ''}" onclick="setFilter('${d}')">${d || '전체'}</span>
+        `).join('')}
+      </div>
+      <div style="color:var(--muted);font-size:11px;margin-bottom:10px">총 ${filtered.length}건</div>
+      ${filtered.length === 0 ? '<div class="empty">기록이 없습니다.</div>' : ''}
+      ${filtered.map(log => `
+        <div class="log-card" onclick="viewLog(${log.id})">
+          <div class="sb" style="margin-bottom:5px">
+            <span class="tag accent">${esc(log.deviceType)}</span>
+            <div style="display:flex;gap:8px;align-items:center">
+              ${log.photos && log.photos.length > 0 ? `<span style="color:var(--accent);font-size:10px">📷${log.photos.length}</span>` : ''}
+              <span style="color:var(--muted);font-size:10px">${fmt(log.date)}</span>
+            </div>
+          </div>
+          ${log.faultType ? `<span class="tag warn" style="margin-bottom:5px;display:inline-flex">${esc(log.faultType)}</span>` : ''}
+          <div style="font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(log.symptom)}</div>
+          ${log.parts && log.parts.length > 0 ? `<div style="font-size:10px;color:var(--muted);margin-top:4px">🔩 ${esc(log.parts.slice(0,3).join(', '))}${log.parts.length > 3 ? ' ...' : ''}</div>` : ''}
+          ${log.specialNote ? `<div style="font-size:10px;color:var(--warning);margin-top:3px">📌 ${esc(log.specialNote.slice(0,40))}${log.specialNote.length > 40 ? '...' : ''}</div>` : ''}
+          <div class="sb" style="justify-content:flex-end;margin-top:8px">
+            <button class="btn-sm danger" onclick="event.stopPropagation();deleteLog(${log.id})">삭제</button>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function setFilter(f) { filter = f; render(); }
+function viewLog(id) { selectedLog = getLogs().find(l => l.id === id); render(); }
+function deleteLog(id, fromDetail) {
+  if (!confirm('삭제할까요?')) return;
+  const updated = getLogs().filter(l => l.id !== id);
+  saveLogs(updated);
+  if (fromDetail) selectedLog = null;
+  render();
+}
+
+// ── AI 분석 ──────────────────────────────────────────────
+let aiState = { q: '', ans: '', loading: false };
+
+function AIAnalysis() {
+  const logs = getLogs();
+  const apiKey = getApiKey();
+  const QUICK = [
+    "가장 많이 발생한 고장 유형 분석해줘",
+    "냉매 누설 케이스 패턴 알려줘",
+    "자주 교체되는 부품 순위 알려줘",
+    "비용 & 시간이 많이 드는 작업은?",
+    "장비별 고장 특성 분석해줘",
+    "반복 고장이 있는 장비 있어?"
+  ];
+
+  return `
+    <div class="sec">
+      ${!apiKey ? `
+        <div class="card" style="border-color:var(--warning)">
+          <span class="lbl">🔑 API 키 설정 필요</span>
+          <p style="font-size:12px;color:var(--muted);line-height:1.6;margin:0 0 10px">
+            AI 분석을 사용하려면 Anthropic API 키가 필요합니다.<br>
+            <a href="https://console.anthropic.com/settings/keys" target="_blank" style="color:var(--accent)">console.anthropic.com</a>에서 발급받으세요.
+          </p>
+          <input id="api-key-input" type="password" placeholder="sk-ant-..." class="mb8">
+          <button class="btn" onclick="saveApiKey()">🔑 API 키 저장</button>
+        </div>
+      ` : `
+        <div class="card">
+          <div class="sb" style="margin-bottom:6px">
+            <span class="lbl" style="margin-bottom:0">🤖 데이터 기반 AI 분석</span>
+            <button class="btn-sm" onclick="resetApiKey()">키 재설정</button>
+          </div>
+          <textarea class="mb8" id="ai-q" placeholder="예) 어떤 장비에서 냉매 누설이 자주 발생해?">${esc(aiState.q)}</textarea>
+          <button class="btn" onclick="askAI()" ${aiState.loading ? 'disabled' : ''}>
+            ${aiState.loading ? '⏳ 분석 중...' : '🔍 분석 요청'}
+          </button>
+        </div>
+        <div class="card">
+          <span class="lbl">⚡ 빠른 분석</span>
+          <div>
+            ${QUICK.map(q => `<span class="chip" onclick="quickAsk('${esc(q)}')">${q}</span>`).join('')}
+          </div>
+        </div>
+        ${aiState.loading ? `<div class="empty">🔄 ${logs.length}건의 데이터를 분석 중...</div>` : ''}
+        ${aiState.ans ? `
+          <div class="ai-box">
+            <div style="color:var(--success);font-size:11px;font-weight:800;margin-bottom:10px;letter-spacing:1px">📊 AI 분석 결과</div>
+            <div class="ai-text">${esc(aiState.ans)}</div>
+          </div>
+        ` : ''}
+      `}
+      ${!logs.length ? '<div class="empty">📂 수리 기록을 등록하면<br>AI가 데이터 기반으로 분석합니다</div>' : ''}
+    </div>
+  `;
+}
+
+function saveApiKey() {
+  const key = $('#api-key-input').value.trim();
+  if (!key.startsWith('sk-ant-')) { alert('유효한 Anthropic API 키를 입력하세요 (sk-ant-...)'); return; }
+  setApiKey(key);
+  render();
+}
+
+function resetApiKey() {
+  if (!confirm('API 키를 삭제할까요?')) return;
+  localStorage.removeItem(API_KEY_STORAGE);
+  render();
+}
+
+function quickAsk(q) { aiState.q = q; askAI(); }
+
+async function askAI() {
+  const qInput = $('#ai-q');
+  if (qInput) aiState.q = qInput.value;
+  const qText = aiState.q.trim();
+  if (!qText) return;
+  const logs = getLogs();
+  if (!logs.length) { aiState.ans = '수리 기록이 없습니다. 먼저 기록을 등록해주세요!'; render(); return; }
+  const apiKey = getApiKey();
+  if (!apiKey) { alert('API 키를 먼저 설정하세요'); return; }
+
+  aiState.loading = true; aiState.ans = ''; render();
+
+  const summary = logs.slice(0, 60).map((l, i) =>
+    `[${i+1}] 날짜:${l.date} 장비:${l.deviceType} 모델:${l.model||'-'} 위치:${l.location||'-'} 고장유형:${l.faultType||'-'} 증상:${l.symptom} 원인:${l.cause||'-'} 조치:${l.action} 교체부품:${[...(l.parts||[]),l.partsCustom].filter(Boolean).join('/')||'-'} 냉매:${l.refrigerant||'-'} ${l.refAmount||''}kg 고압:${l.highPressure||'-'} 저압:${l.lowPressure||'-'} 시간:${l.workTime||'-'}h 비용:${l.cost||'-'}원 특이사항:${l.specialNote||'-'}`
+  ).join('\n');
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-5-20250929',
+        max_tokens: 1500,
+        system: `당신은 냉동공조 전문 분석 AI입니다. 아래 실제 수리 기록 데이터를 바탕으로 분석하세요.
+
+수리 기록 (총 ${logs.length}건):
+${summary}
+
+규칙:
+- 데이터에 있는 내용만 기반으로 답변 (추측 금지)
+- 패턴, 통계, 빈도를 구체적으로 분석
+- 실무에 도움되는 인사이트 포함
+- 한국어, 이모지 적절히 활용, 읽기 쉽게`,
+        messages: [{ role: 'user', content: qText }]
+      })
+    });
+    if (!res.ok) {
+      const err = await res.text();
+      throw new Error(`API 오류: ${res.status} - ${err}`);
+    }
+    const data = await res.json();
+    aiState.ans = data.content?.map(c => c.text || '').join('') || '응답을 받지 못했습니다.';
+  } catch (e) {
+    aiState.ans = `오류: ${e.message}\n\nAPI 키가 올바른지, 인터넷 연결이 정상인지 확인해주세요.`;
+  }
+  aiState.loading = false;
+  render();
+}
+
+// ── 통계 ─────────────────────────────────────────────────
+function Stats() {
+  const logs = getLogs();
+  if (!logs.length) return '<div class="empty">📊 기록이 없습니다.</div>';
+
+  const totalCost = logs.reduce((a, l) => a + (Number(l.cost) || 0), 0);
+  const totalTime = logs.reduce((a, l) => a + (Number(l.workTime) || 0), 0);
+  const totalPhotos = logs.reduce((a, l) => a + (l.photos?.length || 0), 0);
+  const storageSize = new Blob([localStorage.getItem(STORAGE_KEY) || '']).size;
+  const storageMB = (storageSize / 1024 / 1024).toFixed(2);
+
+  const countBy = key => logs.reduce((m, l) => { if (l[key]) m[l[key]] = (m[l[key]] || 0) + 1; return m; }, {});
+  const faultCnt = countBy('faultType');
+  const devCnt = countBy('deviceType');
+
+  const partFreq = {};
+  logs.forEach(l => (l.parts || []).forEach(p => { partFreq[p] = (partFreq[p] || 0) + 1; }));
+  const topParts = Object.entries(partFreq).sort((a, b) => b[1] - a[1]).slice(0, 6);
+
+  return `
+    <div class="sec">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+        <div class="stat-card"><div class="stat-n">${logs.length}</div><div class="stat-l">총 수리 건수</div></div>
+        <div class="stat-card"><div class="stat-n">${totalTime.toFixed(1)}</div><div class="stat-l">총 작업시간(h)</div></div>
+      </div>
+      <div class="stat-card" style="margin-bottom:10px">
+        <div class="stat-n" style="font-size:22px">${totalCost.toLocaleString()}원</div>
+        <div class="stat-l">총 비용 합계</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+        <div class="stat-card"><div class="stat-n" style="font-size:18px">📷 ${totalPhotos}장</div><div class="stat-l">첨부된 사진</div></div>
+        <div class="stat-card"><div class="stat-n" style="font-size:18px">💾 ${storageMB}MB</div><div class="stat-l">저장 공간 사용</div></div>
+      </div>
+
+      ${Object.keys(faultCnt).length > 0 ? `
+        <div class="card">
+          <span class="lbl">⚠️ 고장 유형 통계</span>
+          ${Object.entries(faultCnt).sort((a, b) => b[1] - a[1]).map(([t, n]) => `
+            <div>
+              <div class="sb"><span style="font-size:12px">${esc(t)}</span><span style="font-size:12px;color:var(--accent);font-weight:700">${n}건</span></div>
+              <div class="bar-bg"><div class="bar-fg" style="width:${(n/logs.length)*100}%"></div></div>
+            </div>
+          `).join('')}
+        </div>
+      ` : ''}
+
+      ${topParts.length > 0 ? `
+        <div class="card">
+          <span class="lbl">🔩 교체 부품 빈도 TOP</span>
+          ${topParts.map(([p, n]) => `
+            <div>
+              <div class="sb"><span style="font-size:12px">${esc(p)}</span><span style="font-size:12px;color:var(--warning);font-weight:700">${n}회</span></div>
+              <div class="bar-bg"><div class="bar-fg warn" style="width:${(n/topParts[0][1])*100}%"></div></div>
+            </div>
+          `).join('')}
+        </div>
+      ` : ''}
+
+      <div class="card">
+        <span class="lbl">🔧 장비 유형 분포</span>
+        ${Object.entries(devCnt).sort((a, b) => b[1] - a[1]).map(([t, n]) => `
+          <div class="sb" style="padding:7px 0;border-bottom:1px solid var(--border)">
+            <span style="font-size:12px">${esc(t)}</span>
+            <span class="tag accent2">${n}건</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+// ── 렌더링 ────────────────────────────────────────────────
+function render() {
+  const views = { 0: LogForm, 1: LogList, 2: AIAnalysis, 3: Stats };
+  $('#app').innerHTML = views[currentTab]();
+}
+
+// ── PWA 설치 안내 ────────────────────────────────────────
+function showInstallGuide() {
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const isAndroid = /Android/.test(navigator.userAgent);
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+  if (isStandalone) return; // 이미 설치됨
+  const shown = localStorage.getItem('install-guide-shown');
+  if (shown) return;
+
+  const banner = $('#install-banner');
+  const text = $('#install-text');
+  if (isIOS) {
+    text.innerHTML = 'Safari 하단 <strong>공유 버튼 📤</strong> → <strong>"홈 화면에 추가"</strong>로 앱처럼 사용하세요!';
+    banner.style.display = 'block';
+  } else if (isAndroid) {
+    text.innerHTML = 'Chrome 메뉴(⋮) → <strong>"홈 화면에 추가"</strong> 또는 <strong>"앱 설치"</strong>로 설치하세요!';
+    banner.style.display = 'block';
+  }
+  setTimeout(() => { localStorage.setItem('install-guide-shown', '1'); }, 5000);
+}
+
+render();
+showInstallGuide();
+</script>
+</body>
+</html>
