@@ -32,13 +32,13 @@ body {
 .header {
   background: linear-gradient(160deg, #050a14, #0a1a2e);
   border-bottom: 1px solid var(--border);
-  padding: 14px 18px; position: sticky; top: env(safe-area-inset-top); z-index: 100;
+  padding: 14px 18px;
 }
 .header h1 { font-size: 17px; font-weight: 800; color: var(--accent); margin: 0; }
 .header p { font-size: 10px; color: var(--muted); margin: 2px 0 0; letter-spacing: 1px; }
 .tabs {
   display: flex; background: var(--card); border-bottom: 1px solid var(--border);
-  position: sticky; top: calc(57px + env(safe-area-inset-top)); z-index: 99;
+  position: sticky; top: env(safe-area-inset-top); z-index: 99;
 }
 .tab {
   flex: 1; padding: 11px 2px; font-size: 11px; color: var(--muted);
