@@ -15,6 +15,7 @@
 <style>
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 :root {
+  color-scheme: dark;
   --bg: #080d18; --card: #0f1825; --border: #1a2a3a;
   --accent: #00d4ff; --accent2: #0ea5e9; --success: #10b981;
   --warning: #f59e0b; --danger: #ef4444;
@@ -59,6 +60,10 @@ input, textarea, select {
   width: 100%; background: var(--subtle); border: 1px solid var(--border);
   border-radius: 8px; padding: 9px 11px; color: var(--text);
   font-size: 13px; outline: none; font-family: inherit;
+}
+input[type="date"] {
+  -webkit-appearance: none;
+  appearance: none;
 }
 textarea { min-height: 72px; resize: vertical; }
 .row { display: flex; gap: 8px; }
