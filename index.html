@@ -181,6 +181,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 7px 0; }
   <button class="tab" data-tab="1">📋 목록</button>
   <button class="tab" data-tab="2">🤖 AI분석</button>
   <button class="tab" data-tab="3">📊 통계</button>
+  <button class="tab" data-tab="4">🔧 도우미</button>
 </div>
 
 <div id="install-banner" class="install-banner">
@@ -733,9 +734,134 @@ function Stats() {
   `;
 }
 
+// ── AI 수리 도우미 ───────────────────────────────────────
+let chatState = { messages: [], loading: false, input: '' };
+
+function AIAssistant() {
+  const apiKey = getApiKey();
+  const SUGGESTIONS = [
+    "에어컨 냉방 불량 점검 순서",
+    "R-410A 냉매 충전 방법",
+    "압축기 불량 진단 방법",
+    "실외기 팬모터 교체 방법",
+    "고압 차단 원인과 해결법",
+    "드레인 막힘 처리 방법"
+  ];
+
+  const messagesHtml = chatState.messages.map(m => `
+    <div style="margin-bottom:12px;display:flex;flex-direction:column;align-items:${m.role === 'user' ? 'flex-end' : 'flex-start'}">
+      <div style="max-width:85%;background:${m.role === 'user' ? 'var(--accent)' : '#05140a'};color:${m.role === 'user' ? '#000' : '#86efac'};border-radius:12px;padding:10px 13px;font-size:15px;line-height:1.7;${m.role === 'assistant' ? 'border:1px solid rgba(16,185,129,0.3);' : ''}white-space:pre-wrap">
+        ${esc(m.content)}
+      </div>
+    </div>
+  `).join('');
+
+  return `
+    <div class="sec">
+      ${!apiKey ? `
+        <div class="card" style="border-color:var(--warning)">
+          <span class="lbl">🔑 API 키 설정 필요</span>
+          <p style="font-size:14px;color:var(--muted);line-height:1.6;margin:0 0 10px">
+            AI 도우미를 사용하려면 Anthropic API 키가 필요합니다.<br>
+            <a href="https://console.anthropic.com/settings/keys" target="_blank" style="color:var(--accent)">console.anthropic.com</a>에서 발급받으세요.
+          </p>
+          <input id="api-key-input2" type="password" placeholder="sk-ant-..." class="mb8">
+          <button class="btn" onclick="saveApiKey2()">🔑 API 키 저장</button>
+        </div>
+      ` : `
+        ${chatState.messages.length === 0 ? `
+          <div class="card" style="margin-bottom:10px">
+            <div style="font-size:15px;color:var(--text);line-height:1.7;margin-bottom:10px">
+              👋 냉동공조 전문 AI 수리 도우미입니다.<br>
+              고장 진단, 수리 방법, 부품 정보 등 무엇이든 물어보세요!
+            </div>
+            <span class="lbl">💡 자주 묻는 질문</span>
+            <div>${SUGGESTIONS.map(s => `<span class="chip" onclick="chatAsk('${esc(s)}')">${s}</span>`).join('')}</div>
+          </div>
+        ` : `
+          <div id="chat-messages" style="margin-bottom:10px">
+            ${messagesHtml}
+          </div>
+          <div style="text-align:center;margin-bottom:10px">
+            <button class="btn-sm" onclick="clearChat()">🗑️ 대화 초기화</button>
+          </div>
+        `}
+        ${chatState.loading ? `<div class="empty" style="padding:20px">🔄 AI가 답변을 작성 중입니다...</div>` : ''}
+        <div class="card">
+          <textarea id="chat-input" placeholder="냉동공조 수리에 대해 무엇이든 물어보세요..." class="mb8" style="min-height:60px;resize:none" oninput="chatState.input=this.value" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat();}">${esc(chatState.input)}</textarea>
+          <button class="btn" onclick="sendChat()" ${chatState.loading ? 'disabled' : ''}>
+            ${chatState.loading ? '⏳ 답변 중...' : '💬 전송 (Enter)'}
+          </button>
+        </div>
+      `}
+    </div>
+  `;
+}
+
+function saveApiKey2() {
+  const key = $('#api-key-input2').value.trim();
+  if (!key.startsWith('sk-ant-')) { alert('유효한 Anthropic API 키를 입력하세요 (sk-ant-...)'); return; }
+  setApiKey(key);
+  render();
+}
+
+function chatAsk(q) { chatState.input = q; sendChat(); }
+function clearChat() { chatState.messages = []; chatState.input = ''; render(); }
+
+async function sendChat() {
+  const inputEl = $('#chat-input');
+  if (inputEl) chatState.input = inputEl.value;
+  const text = chatState.input.trim();
+  if (!text || chatState.loading) return;
+  const apiKey = getApiKey();
+  if (!apiKey) { alert('API 키를 먼저 설정하세요'); return; }
+
+  chatState.messages = [...chatState.messages, { role: 'user', content: text }];
+  chatState.input = '';
+  chatState.loading = true;
+  render();
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-5-20250929',
+        max_tokens: 1500,
+        system: `당신은 냉동공조 전문 수리 도우미 AI입니다. 에어컨, 냉동창고, 냉동공조 시스템의 수리와 유지보수에 대한 전문적인 조언을 제공합니다.
+
+규칙:
+- 냉동공조 분야에 집중하여 전문적이고 실용적인 조언 제공
+- 안전 주의사항은 반드시 포함
+- 단계별로 명확하게 설명
+- 한국어로 답변, 이모지 적절히 활용
+- 모르거나 위험한 작업은 전문가 상담 권유`,
+        messages: chatState.messages.map(m => ({ role: m.role, content: m.content }))
+      })
+    });
+    if (!res.ok) throw new Error(`API 오류: ${res.status}`);
+    const data = await res.json();
+    const answer = data.content?.map(c => c.text || '').join('') || '응답을 받지 못했습니다.';
+    chatState.messages = [...chatState.messages, { role: 'assistant', content: answer }];
+  } catch (e) {
+    chatState.messages = [...chatState.messages, { role: 'assistant', content: `오류: ${e.message}\n\nAPI 키가 올바른지, 인터넷 연결이 정상인지 확인해주세요.` }];
+  }
+  chatState.loading = false;
+  render();
+  setTimeout(() => {
+    const msgs = document.getElementById('chat-messages');
+    if (msgs) msgs.lastElementChild?.scrollIntoView({ behavior: 'smooth' });
+  }, 100);
+}
+
 // ── 렌더링 ────────────────────────────────────────────────
 function render() {
-  const views = { 0: LogForm, 1: LogList, 2: AIAnalysis, 3: Stats };
+  const views = { 0: LogForm, 1: LogList, 2: AIAnalysis, 3: Stats, 4: AIAssistant };
   $('#app').innerHTML = views[currentTab]();
 }
 
