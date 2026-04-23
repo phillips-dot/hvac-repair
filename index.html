@@ -15,7 +15,6 @@
 <style>
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 :root {
-  color-scheme: dark;
   --bg: #080d18; --card: #0f1825; --border: #1a2a3a;
   --accent: #00d4ff; --accent2: #0ea5e9; --success: #10b981;
   --warning: #f59e0b; --danger: #ef4444;
@@ -32,15 +31,16 @@ body {
 .header {
   background: linear-gradient(160deg, #050a14, #0a1a2e);
   border-bottom: 1px solid var(--border);
-  padding: 14px 18px;
+  padding: 14px 18px; position: sticky; top: env(safe-area-inset-top); z-index: 100;
 }
-.header h1 { font-size: 20px; font-weight: 800; color: var(--accent); margin: 0; }
-.header p { font-size: 12px; color: var(--muted); margin: 2px 0 0; letter-spacing: 1px; }
+.header h1 { font-size: 17px; font-weight: 800; color: var(--accent); margin: 0; }
+.header p { font-size: 10px; color: var(--muted); margin: 2px 0 0; letter-spacing: 1px; }
 .tabs {
   display: flex; background: var(--card); border-bottom: 1px solid var(--border);
+  position: sticky; top: calc(57px + env(safe-area-inset-top)); z-index: 99;
 }
 .tab {
-  flex: 1; padding: 11px 2px; font-size: 13px; color: var(--muted);
+  flex: 1; padding: 11px 2px; font-size: 11px; color: var(--muted);
   background: none; border: none; border-bottom: 2px solid transparent;
   cursor: pointer; font-family: inherit;
 }
@@ -52,17 +52,13 @@ body {
 }
 .card.warn { border-color: rgba(245, 158, 11, 0.3); }
 .lbl {
-  font-size: 12px; color: var(--muted); text-transform: uppercase;
+  font-size: 10px; color: var(--muted); text-transform: uppercase;
   letter-spacing: 1px; margin-bottom: 6px; display: block; font-weight: 700;
 }
 input, textarea, select {
   width: 100%; background: var(--subtle); border: 1px solid var(--border);
   border-radius: 8px; padding: 9px 11px; color: var(--text);
-  font-size: 15px; outline: none; font-family: inherit;
-}
-input[type="date"] {
-  -webkit-appearance: none;
-  appearance: none;
+  font-size: 13px; outline: none; font-family: inherit;
 }
 textarea { min-height: 72px; resize: vertical; }
 .row { display: flex; gap: 8px; }
@@ -72,26 +68,26 @@ textarea { min-height: 72px; resize: vertical; }
 .btn {
   width: 100%; background: var(--accent); color: #000;
   border: none; border-radius: 9px; padding: 12px;
-  font-size: 16px; font-weight: 800; cursor: pointer; font-family: inherit;
+  font-size: 14px; font-weight: 800; cursor: pointer; font-family: inherit;
 }
 .btn.success { background: var(--success); }
 .btn.danger { background: var(--danger); color: #fff; }
 .btn-sm {
   background: transparent; color: var(--accent); border: 1px solid rgba(0,212,255,0.3);
-  border-radius: 6px; padding: 5px 11px; font-size: 13px; font-weight: 700;
+  border-radius: 6px; padding: 5px 11px; font-size: 11px; font-weight: 700;
   cursor: pointer; font-family: inherit;
 }
 .btn-sm.danger { color: var(--danger); border-color: rgba(239,68,68,0.3); }
 .chip {
   display: inline-block; background: var(--subtle); color: var(--muted);
   border: 1px solid var(--border); border-radius: 20px;
-  padding: 4px 10px; font-size: 14px; cursor: pointer;
+  padding: 4px 10px; font-size: 12px; cursor: pointer;
   margin: 0 4px 6px 0;
 }
 .chip.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 700; }
 .tag {
   display: inline-flex; align-items: center; border-radius: 20px;
-  padding: 2px 9px; font-size: 12px; font-weight: 700;
+  padding: 2px 9px; font-size: 10px; font-weight: 700;
 }
 .tag.accent { background: rgba(0,212,255,0.12); color: var(--accent); border: 1px solid rgba(0,212,255,0.25); }
 .tag.warn { background: rgba(245,158,11,0.12); color: var(--warning); border: 1px solid rgba(245,158,11,0.25); }
@@ -106,15 +102,15 @@ textarea { min-height: 72px; resize: vertical; }
   border-radius: 12px; padding: 14px; margin-top: 10px;
 }
 .ai-text {
-  font-size: 15px; line-height: 1.85; color: #86efac; white-space: pre-wrap;
+  font-size: 13px; line-height: 1.85; color: #86efac; white-space: pre-wrap;
 }
 .empty { text-align: center; padding: 50px 20px; color: var(--muted); }
 .stat-card {
   background: var(--card); border: 1px solid var(--border);
   border-radius: 12px; padding: 14px; text-align: center;
 }
-.stat-n { font-size: 28px; font-weight: 800; color: var(--accent); }
-.stat-l { font-size: 13px; color: var(--muted); margin-top: 3px; }
+.stat-n { font-size: 26px; font-weight: 800; color: var(--accent); }
+.stat-l { font-size: 10px; color: var(--muted); margin-top: 3px; }
 .bar-bg { height: 5px; background: var(--subtle); border-radius: 3px; margin: 4px 0 10px; }
 .bar-fg { height: 100%; background: var(--accent); border-radius: 3px; transition: width 0.5s; }
 .bar-fg.warn { background: var(--warning); }
@@ -143,21 +139,166 @@ textarea { min-height: 72px; resize: vertical; }
   aspect-ratio: 1; border-radius: 8px; background: var(--subtle);
   border: 2px dashed var(--border); display: flex; flex-direction: column;
   align-items: center; justify-content: center; cursor: pointer;
-  color: var(--muted); font-size: 13px; gap: 4px;
+  color: var(--muted); font-size: 11px; gap: 4px;
 }
 .photo-add:hover { border-color: var(--accent); color: var(--accent); }
-.photo-add .icon { font-size: 24px; }
+.photo-add .icon { font-size: 22px; }
 .photo-viewer {
   position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000;
   display: flex; align-items: center; justify-content: center;
   padding: 20px; cursor: pointer;
 }
 .photo-viewer img { max-width: 100%; max-height: 100%; }
-.photo-count { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.photo-count { font-size: 10px; color: var(--muted); margin-bottom: 6px; }
+
+/* AI 도우미 채팅 UI */
+.chat-container {
+  display: flex; flex-direction: column;
+  min-height: calc(100vh - 180px);
+}
+.chat-messages {
+  flex: 1; overflow-y: auto; padding: 14px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.msg {
+  max-width: 85%; padding: 10px 13px; border-radius: 14px;
+  font-size: 13px; line-height: 1.6; white-space: pre-wrap; word-break: break-word;
+}
+.msg.user {
+  align-self: flex-end; background: var(--accent);
+  color: #000; border-bottom-right-radius: 4px;
+}
+.msg.ai {
+  align-self: flex-start; background: var(--card);
+  color: var(--text); border: 1px solid var(--border);
+  border-bottom-left-radius: 4px;
+}
+.msg.system {
+  align-self: center; background: rgba(245,158,11,0.1);
+  color: var(--warning); font-size: 11px;
+  border: 1px solid rgba(245,158,11,0.3);
+  padding: 6px 12px; border-radius: 20px;
+}
+.msg-time {
+  font-size: 9px; color: var(--muted); margin-top: 4px;
+  text-align: right;
+}
+.msg.ai .msg-time { text-align: left; }
+.msg-photo {
+  max-width: 200px; border-radius: 8px; margin-top: 6px;
+  display: block; cursor: pointer;
+}
+.msg-cases {
+  background: rgba(0,212,255,0.08); border-left: 3px solid var(--accent);
+  padding: 8px 12px; margin: 6px 0; border-radius: 6px;
+  font-size: 12px;
+}
+.msg-cases strong { color: var(--accent); }
+.chat-input-area {
+  background: var(--card); border-top: 1px solid var(--border);
+  padding: 10px; position: sticky; bottom: 0;
+}
+.chat-input-row {
+  display: flex; gap: 6px; align-items: flex-end;
+}
+.chat-input {
+  flex: 1; background: var(--subtle); border: 1px solid var(--border);
+  border-radius: 20px; padding: 9px 14px; color: var(--text);
+  font-size: 13px; outline: none; font-family: inherit;
+  min-height: 20px; max-height: 120px; resize: none;
+}
+.chat-btn {
+  width: 38px; height: 38px; border-radius: 50%;
+  border: none; cursor: pointer; font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.chat-btn.send { background: var(--accent); color: #000; }
+.chat-btn.photo { background: var(--subtle); color: var(--accent); }
+.chat-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.chat-typing {
+  align-self: flex-start; padding: 12px 14px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 14px; font-size: 12px; color: var(--muted);
+}
+.chat-typing .dot {
+  display: inline-block; width: 5px; height: 5px;
+  background: var(--accent); border-radius: 50%;
+  margin: 0 2px; animation: blink 1.4s infinite;
+}
+.chat-typing .dot:nth-child(2) { animation-delay: 0.2s; }
+.chat-typing .dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes blink { 0%, 80%, 100% { opacity: 0.3; } 40% { opacity: 1; } }
+.chat-welcome {
+  text-align: center; padding: 30px 20px; color: var(--muted);
+}
+.chat-welcome h3 { color: var(--accent); font-size: 16px; margin: 0 0 10px; }
+.chat-welcome .quick-btns {
+  display: flex; flex-direction: column; gap: 6px; margin-top: 20px;
+}
+.quick-q-btn {
+  background: var(--card); border: 1px solid var(--border);
+  color: var(--text); padding: 10px 14px; border-radius: 10px;
+  font-size: 12px; cursor: pointer; text-align: left;
+  font-family: inherit;
+}
+.quick-q-btn:hover { border-color: var(--accent); }
+.chat-toolbar {
+  display: flex; gap: 6px; padding: 8px 10px 0;
+  overflow-x: auto; background: var(--card);
+  border-bottom: 1px solid var(--border);
+}
+.chat-toolbar::-webkit-scrollbar { display: none; }
+.chat-mode-chip {
+  white-space: nowrap; padding: 5px 12px; border-radius: 20px;
+  font-size: 11px; border: 1px solid var(--border);
+  background: var(--subtle); color: var(--muted);
+  cursor: pointer; font-weight: 600;
+}
+.chat-mode-chip.active { background: var(--accent); color: #000; border-color: var(--accent); }
+.save-record-card {
+  background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.3);
+  border-radius: 10px; padding: 12px; margin: 8px 0;
+}
+.save-record-card h4 {
+  margin: 0 0 8px; color: var(--success); font-size: 12px;
+  display: flex; align-items: center; gap: 6px;
+}
+.save-record-card .field {
+  font-size: 12px; margin: 4px 0; line-height: 1.5;
+}
+.save-record-card .field strong { color: var(--accent); margin-right: 6px; }
+.save-record-actions {
+  display: flex; gap: 6px; margin-top: 10px;
+}
+.save-record-actions button {
+  flex: 1; padding: 8px; border-radius: 6px; font-size: 12px;
+  font-weight: 700; cursor: pointer; font-family: inherit;
+}
+.btn-confirm { background: var(--success); color: #fff; border: none; }
+.btn-edit { background: var(--subtle); color: var(--accent); border: 1px solid var(--accent); }
+.photo-preview-row {
+  display: flex; gap: 6px; padding: 8px 10px 0;
+  overflow-x: auto;
+}
+.photo-preview-row::-webkit-scrollbar { display: none; }
+.photo-preview {
+  position: relative; width: 50px; height: 50px;
+  border-radius: 6px; overflow: hidden; flex-shrink: 0;
+  border: 1px solid var(--border);
+}
+.photo-preview img { width: 100%; height: 100%; object-fit: cover; }
+.photo-preview .remove {
+  position: absolute; top: 2px; right: 2px;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: rgba(239,68,68,0.9); color: #fff;
+  font-size: 10px; display: flex; align-items: center;
+  justify-content: center; border: none; cursor: pointer;
+}
 .install-banner {
   background: linear-gradient(135deg, rgba(0,212,255,0.15), rgba(14,165,233,0.15));
   border: 1px solid rgba(0,212,255,0.3); border-radius: 12px;
-  padding: 12px 14px; margin: 14px; font-size: 14px; display: none;
+  padding: 12px 14px; margin: 14px; font-size: 12px; display: none;
   position: relative;
 }
 .install-banner strong { color: var(--accent); }
@@ -179,9 +320,9 @@ hr { border: none; border-top: 1px solid var(--border); margin: 7px 0; }
 <div class="tabs">
   <button class="tab active" data-tab="0">📝 기록</button>
   <button class="tab" data-tab="1">📋 목록</button>
-  <button class="tab" data-tab="2">🤖 AI분석</button>
-  <button class="tab" data-tab="3">📊 통계</button>
-  <button class="tab" data-tab="4">🔧 도우미</button>
+  <button class="tab" data-tab="2">💬 AI도우미</button>
+  <button class="tab" data-tab="3">🤖 AI분석</button>
+  <button class="tab" data-tab="4">📊 통계</button>
 </div>
 
 <div id="install-banner" class="install-banner">
@@ -195,6 +336,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 7px 0; }
 <script>
 const STORAGE_KEY = 'hvac-repair-logs-v2';
 const API_KEY_STORAGE = 'anthropic-api-key';
+const CHAT_STORAGE = 'hvac-chat-history';
 
 const DEVICE_TYPES = ["에어컨(가정용)", "에어컨(상업용)", "냉동창고", "기타 냉동공조"];
 const FAULT_TYPES = ["냉매 부족/누설", "압축기 불량", "팬모터 불량", "전기계통 불량", "열교환기 오염", "팽창밸브 불량", "센서 불량", "드레인 막힘", "기타"];
@@ -296,7 +438,7 @@ function LogForm() {
             </label>
           ` : ''}
         </div>
-        <div style="font-size:14px;color:var(--muted);line-height:1.5">
+        <div style="font-size:10px;color:var(--muted);line-height:1.5">
           💡 고장 부위, 수리 전/후, 계기판 등 자유롭게 촬영하세요.<br>
           사진은 자동으로 압축되어 저장됩니다.
         </div>
@@ -467,10 +609,10 @@ function LogList() {
         <div class="card">
           <div class="sb" style="margin-bottom:8px">
             <span class="tag accent">${esc(sel.deviceType)}</span>
-            <span style="color:var(--muted);font-size:15px">${fmt(sel.date)}</span>
+            <span style="color:var(--muted);font-size:11px">${fmt(sel.date)}</span>
           </div>
-          ${sel.model ? `<div style="font-size:14px;color:var(--muted);margin-bottom:4px">📦 ${esc(sel.model)}</div>` : ''}
-          ${sel.location ? `<div style="font-size:14px;color:var(--muted);margin-bottom:8px">📍 ${esc(sel.location)}</div>` : ''}
+          ${sel.model ? `<div style="font-size:12px;color:var(--muted);margin-bottom:4px">📦 ${esc(sel.model)}</div>` : ''}
+          ${sel.location ? `<div style="font-size:12px;color:var(--muted);margin-bottom:8px">📍 ${esc(sel.location)}</div>` : ''}
           ${sel.faultType ? `<span class="tag warn">${esc(sel.faultType)}</span>` : ''}
         </div>
         ${sel.photos && sel.photos.length > 0 ? `
@@ -488,7 +630,7 @@ function LogList() {
         ${fields.map(([k, v]) => `
           <div class="card ${k === '📌 특이사항' ? 'warn' : ''}">
             <span class="lbl">${k}</span>
-            <div style="font-size:15px;line-height:1.7">${esc(v)}</div>
+            <div style="font-size:13px;line-height:1.7">${esc(v)}</div>
           </div>
         `).join('')}
         <button class="btn danger" onclick="deleteLog(${sel.id}, true)">🗑️ 삭제</button>
@@ -503,21 +645,21 @@ function LogList() {
           <span class="chip nowrap ${filter === d ? 'active' : ''}" onclick="setFilter('${d}')">${d || '전체'}</span>
         `).join('')}
       </div>
-      <div style="color:var(--muted);font-size:15px;margin-bottom:10px">총 ${filtered.length}건</div>
+      <div style="color:var(--muted);font-size:11px;margin-bottom:10px">총 ${filtered.length}건</div>
       ${filtered.length === 0 ? '<div class="empty">기록이 없습니다.</div>' : ''}
       ${filtered.map(log => `
         <div class="log-card" onclick="viewLog(${log.id})">
           <div class="sb" style="margin-bottom:5px">
             <span class="tag accent">${esc(log.deviceType)}</span>
             <div style="display:flex;gap:8px;align-items:center">
-              ${log.photos && log.photos.length > 0 ? `<span style="color:var(--accent);font-size:14px">📷${log.photos.length}</span>` : ''}
-              <span style="color:var(--muted);font-size:14px">${fmt(log.date)}</span>
+              ${log.photos && log.photos.length > 0 ? `<span style="color:var(--accent);font-size:10px">📷${log.photos.length}</span>` : ''}
+              <span style="color:var(--muted);font-size:10px">${fmt(log.date)}</span>
             </div>
           </div>
           ${log.faultType ? `<span class="tag warn" style="margin-bottom:5px;display:inline-flex">${esc(log.faultType)}</span>` : ''}
-          <div style="font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(log.symptom)}</div>
-          ${log.parts && log.parts.length > 0 ? `<div style="font-size:14px;color:var(--muted);margin-top:4px">🔩 ${esc(log.parts.slice(0,3).join(', '))}${log.parts.length > 3 ? ' ...' : ''}</div>` : ''}
-          ${log.specialNote ? `<div style="font-size:14px;color:var(--warning);margin-top:3px">📌 ${esc(log.specialNote.slice(0,40))}${log.specialNote.length > 40 ? '...' : ''}</div>` : ''}
+          <div style="font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(log.symptom)}</div>
+          ${log.parts && log.parts.length > 0 ? `<div style="font-size:10px;color:var(--muted);margin-top:4px">🔩 ${esc(log.parts.slice(0,3).join(', '))}${log.parts.length > 3 ? ' ...' : ''}</div>` : ''}
+          ${log.specialNote ? `<div style="font-size:10px;color:var(--warning);margin-top:3px">📌 ${esc(log.specialNote.slice(0,40))}${log.specialNote.length > 40 ? '...' : ''}</div>` : ''}
           <div class="sb" style="justify-content:flex-end;margin-top:8px">
             <button class="btn-sm danger" onclick="event.stopPropagation();deleteLog(${log.id})">삭제</button>
           </div>
@@ -557,7 +699,7 @@ function AIAnalysis() {
       ${!apiKey ? `
         <div class="card" style="border-color:var(--warning)">
           <span class="lbl">🔑 API 키 설정 필요</span>
-          <p style="font-size:14px;color:var(--muted);line-height:1.6;margin:0 0 10px">
+          <p style="font-size:12px;color:var(--muted);line-height:1.6;margin:0 0 10px">
             AI 분석을 사용하려면 Anthropic API 키가 필요합니다.<br>
             <a href="https://console.anthropic.com/settings/keys" target="_blank" style="color:var(--accent)">console.anthropic.com</a>에서 발급받으세요.
           </p>
@@ -584,7 +726,7 @@ function AIAnalysis() {
         ${aiState.loading ? `<div class="empty">🔄 ${logs.length}건의 데이터를 분석 중...</div>` : ''}
         ${aiState.ans ? `
           <div class="ai-box">
-            <div style="color:var(--success);font-size:15px;font-weight:800;margin-bottom:10px;letter-spacing:1px">📊 AI 분석 결과</div>
+            <div style="color:var(--success);font-size:11px;font-weight:800;margin-bottom:10px;letter-spacing:1px">📊 AI 분석 결과</div>
             <div class="ai-text">${esc(aiState.ans)}</div>
           </div>
         ` : ''}
@@ -635,7 +777,7 @@ async function askAI() {
         'anthropic-dangerous-direct-browser-access': 'true'
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-5-20250929',
+        model: 'claude-sonnet-4-6',
         max_tokens: 1500,
         system: `당신은 냉동공조 전문 분석 AI입니다. 아래 실제 수리 기록 데이터를 바탕으로 분석하세요.
 
@@ -689,12 +831,12 @@ function Stats() {
         <div class="stat-card"><div class="stat-n">${totalTime.toFixed(1)}</div><div class="stat-l">총 작업시간(h)</div></div>
       </div>
       <div class="stat-card" style="margin-bottom:10px">
-        <div class="stat-n" style="font-size:24px">${totalCost.toLocaleString()}원</div>
+        <div class="stat-n" style="font-size:22px">${totalCost.toLocaleString()}원</div>
         <div class="stat-l">총 비용 합계</div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
-        <div class="stat-card"><div class="stat-n" style="font-size:20px">📷 ${totalPhotos}장</div><div class="stat-l">첨부된 사진</div></div>
-        <div class="stat-card"><div class="stat-n" style="font-size:20px">💾 ${storageMB}MB</div><div class="stat-l">저장 공간 사용</div></div>
+        <div class="stat-card"><div class="stat-n" style="font-size:18px">📷 ${totalPhotos}장</div><div class="stat-l">첨부된 사진</div></div>
+        <div class="stat-card"><div class="stat-n" style="font-size:18px">💾 ${storageMB}MB</div><div class="stat-l">저장 공간 사용</div></div>
       </div>
 
       ${Object.keys(faultCnt).length > 0 ? `
@@ -702,7 +844,7 @@ function Stats() {
           <span class="lbl">⚠️ 고장 유형 통계</span>
           ${Object.entries(faultCnt).sort((a, b) => b[1] - a[1]).map(([t, n]) => `
             <div>
-              <div class="sb"><span style="font-size:14px">${esc(t)}</span><span style="font-size:14px;color:var(--accent);font-weight:700">${n}건</span></div>
+              <div class="sb"><span style="font-size:12px">${esc(t)}</span><span style="font-size:12px;color:var(--accent);font-weight:700">${n}건</span></div>
               <div class="bar-bg"><div class="bar-fg" style="width:${(n/logs.length)*100}%"></div></div>
             </div>
           `).join('')}
@@ -714,7 +856,7 @@ function Stats() {
           <span class="lbl">🔩 교체 부품 빈도 TOP</span>
           ${topParts.map(([p, n]) => `
             <div>
-              <div class="sb"><span style="font-size:14px">${esc(p)}</span><span style="font-size:14px;color:var(--warning);font-weight:700">${n}회</span></div>
+              <div class="sb"><span style="font-size:12px">${esc(p)}</span><span style="font-size:12px;color:var(--warning);font-weight:700">${n}회</span></div>
               <div class="bar-bg"><div class="bar-fg warn" style="width:${(n/topParts[0][1])*100}%"></div></div>
             </div>
           `).join('')}
@@ -725,7 +867,7 @@ function Stats() {
         <span class="lbl">🔧 장비 유형 분포</span>
         ${Object.entries(devCnt).sort((a, b) => b[1] - a[1]).map(([t, n]) => `
           <div class="sb" style="padding:7px 0;border-bottom:1px solid var(--border)">
-            <span style="font-size:14px">${esc(t)}</span>
+            <span style="font-size:12px">${esc(t)}</span>
             <span class="tag accent2">${n}건</span>
           </div>
         `).join('')}
@@ -734,135 +876,519 @@ function Stats() {
   `;
 }
 
-// ── AI 수리 도우미 ───────────────────────────────────────
-let chatState = { messages: [], loading: false, input: '' };
+// ── AI 수리 도우미 💬 ─────────────────────────────────────
+let chatState = {
+  messages: [],
+  mode: 'free', // free, diagnose, guide
+  pendingPhotos: [],
+  isLoading: false,
+};
+
+function loadChatHistory() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(CHAT_STORAGE) || '[]');
+    chatState.messages = saved.slice(-30); // 최근 30개만 유지
+  } catch { chatState.messages = []; }
+}
+
+function saveChatHistory() {
+  try {
+    localStorage.setItem(CHAT_STORAGE, JSON.stringify(chatState.messages.slice(-30)));
+  } catch (e) {
+    if (e.name === 'QuotaExceededError') {
+      chatState.messages = chatState.messages.slice(-10);
+      try { localStorage.setItem(CHAT_STORAGE, JSON.stringify(chatState.messages)); } catch {}
+    }
+  }
+}
 
 function AIAssistant() {
+  loadChatHistory();
   const apiKey = getApiKey();
-  const SUGGESTIONS = [
-    "에어컨 냉방 불량 점검 순서",
-    "R-410A 냉매 충전 방법",
-    "압축기 불량 진단 방법",
-    "실외기 팬모터 교체 방법",
-    "고압 차단 원인과 해결법",
-    "드레인 막힘 처리 방법"
-  ];
 
-  const messagesHtml = chatState.messages.map(m => `
-    <div style="margin-bottom:12px;display:flex;flex-direction:column;align-items:${m.role === 'user' ? 'flex-end' : 'flex-start'}">
-      <div style="max-width:85%;background:${m.role === 'user' ? 'var(--accent)' : '#05140a'};color:${m.role === 'user' ? '#000' : '#86efac'};border-radius:12px;padding:10px 13px;font-size:15px;line-height:1.7;${m.role === 'assistant' ? 'border:1px solid rgba(16,185,129,0.3);' : ''}white-space:pre-wrap">
-        ${esc(m.content)}
-      </div>
-    </div>
-  `).join('');
-
-  return `
-    <div class="sec">
-      ${!apiKey ? `
+  if (!apiKey) {
+    return `
+      <div class="sec">
         <div class="card" style="border-color:var(--warning)">
           <span class="lbl">🔑 API 키 설정 필요</span>
-          <p style="font-size:14px;color:var(--muted);line-height:1.6;margin:0 0 10px">
-            AI 도우미를 사용하려면 Anthropic API 키가 필요합니다.<br>
+          <p style="font-size:12px;color:var(--muted);line-height:1.6;margin:0 0 10px">
+            AI 도우미를 쓰려면 Anthropic API 키가 필요합니다.<br>
             <a href="https://console.anthropic.com/settings/keys" target="_blank" style="color:var(--accent)">console.anthropic.com</a>에서 발급받으세요.
           </p>
-          <input id="api-key-input2" type="password" placeholder="sk-ant-..." class="mb8">
-          <button class="btn" onclick="saveApiKey2()">🔑 API 키 저장</button>
+          <input id="api-key-input" type="password" placeholder="sk-ant-..." class="mb8">
+          <button class="btn" onclick="saveApiKey()">🔑 API 키 저장</button>
         </div>
-      ` : `
-        ${chatState.messages.length === 0 ? `
-          <div class="card" style="margin-bottom:10px">
-            <div style="font-size:15px;color:var(--text);line-height:1.7;margin-bottom:10px">
-              👋 냉동공조 전문 AI 수리 도우미입니다.<br>
-              고장 진단, 수리 방법, 부품 정보 등 무엇이든 물어보세요!
-            </div>
-            <span class="lbl">💡 자주 묻는 질문</span>
-            <div>${SUGGESTIONS.map(s => `<span class="chip" onclick="chatAsk('${esc(s)}')">${s}</span>`).join('')}</div>
+      </div>
+    `;
+  }
+
+  const modeLabels = {
+    free: '💭 자유 대화',
+    diagnose: '🔍 증상 진단',
+    guide: '📋 단계별 가이드',
+  };
+
+  return `
+    <div class="chat-toolbar">
+      ${Object.entries(modeLabels).map(([k, v]) => `
+        <div class="chat-mode-chip ${chatState.mode === k ? 'active' : ''}" onclick="setChatMode('${k}')">${v}</div>
+      `).join('')}
+      <div class="chat-mode-chip" onclick="clearChat()" style="margin-left:auto">🗑️ 초기화</div>
+    </div>
+    <div class="chat-container">
+      <div class="chat-messages" id="chat-messages">
+        ${chatState.messages.length === 0 ? renderChatWelcome() : chatState.messages.map(renderMessage).join('')}
+        ${chatState.isLoading ? '<div class="chat-typing"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>' : ''}
+      </div>
+      <div class="chat-input-area">
+        ${chatState.pendingPhotos.length > 0 ? `
+          <div class="photo-preview-row">
+            ${chatState.pendingPhotos.map((p, i) => `
+              <div class="photo-preview">
+                <img src="${p}">
+                <button class="remove" onclick="removePendingPhoto(${i})">×</button>
+              </div>
+            `).join('')}
           </div>
-        ` : `
-          <div id="chat-messages" style="margin-bottom:10px">
-            ${messagesHtml}
-          </div>
-          <div style="text-align:center;margin-bottom:10px">
-            <button class="btn-sm" onclick="clearChat()">🗑️ 대화 초기화</button>
-          </div>
-        `}
-        ${chatState.loading ? `<div class="empty" style="padding:20px">🔄 AI가 답변을 작성 중입니다...</div>` : ''}
-        <div class="card">
-          <textarea id="chat-input" placeholder="냉동공조 수리에 대해 무엇이든 물어보세요..." class="mb8" style="min-height:60px;resize:none" oninput="chatState.input=this.value" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat();}">${esc(chatState.input)}</textarea>
-          <button class="btn" onclick="sendChat()" ${chatState.loading ? 'disabled' : ''}>
-            ${chatState.loading ? '⏳ 답변 중...' : '💬 전송 (Enter)'}
-          </button>
+        ` : ''}
+        <div class="chat-input-row">
+          <label class="chat-btn photo" title="사진 첨부">
+            📷
+            <input type="file" accept="image/*" capture="environment" style="display:none" onchange="handleChatPhoto(event)">
+          </label>
+          <textarea id="chat-input" class="chat-input" placeholder="${getChatPlaceholder()}" rows="1" onkeydown="handleChatKeydown(event)"></textarea>
+          <button class="chat-btn send" id="send-btn" onclick="sendMessage()">▶</button>
         </div>
-      `}
+      </div>
     </div>
   `;
 }
 
-function saveApiKey2() {
-  const key = $('#api-key-input2').value.trim();
-  if (!key.startsWith('sk-ant-')) { alert('유효한 Anthropic API 키를 입력하세요 (sk-ant-...)'); return; }
-  setApiKey(key);
+function renderChatWelcome() {
+  const mode = chatState.mode;
+  const logs = getLogs();
+  const welcomeText = {
+    free: {
+      title: '💭 무엇이든 물어보세요',
+      desc: `${logs.length}건의 과거 수리 기록을 참고해서 답변드릴게요`,
+      quick: [
+        '에어컨 냉방이 약해. 어디부터 확인해볼까?',
+        'R-410A 진공 작업 순서 알려줘',
+        '최근에 내가 수리한 기록 요약해줘',
+        '가장 자주 고장나는 부품이 뭐야?',
+      ],
+    },
+    diagnose: {
+      title: '🔍 증상을 말해주세요',
+      desc: '과거 사례 찾아서 진단을 도와드려요',
+      quick: [
+        '상업용 에어컨에서 누수가 생겼어',
+        '실외기에서 이상한 소음이 나',
+        '냉방은 되는데 온도가 안 내려가',
+        '실내기 작동은 되는데 실외기가 안 돌아',
+      ],
+    },
+    guide: {
+      title: '📋 단계별로 도와드려요',
+      desc: '작업 중 궁금한 점을 하나씩 해결해요',
+      quick: [
+        '냉매 누설 점검 방법 알려줘',
+        '팽창밸브 교체 순서 가이드',
+        '압축기 고장 진단 단계별로',
+        '응축기 청소 방법',
+      ],
+    },
+  };
+  const w = welcomeText[mode];
+  return `
+    <div class="chat-welcome">
+      <h3>${w.title}</h3>
+      <p style="font-size:12px">${w.desc}</p>
+      <div class="quick-btns">
+        ${w.quick.map(q => `<button class="quick-q-btn" onclick="useQuickQ('${q.replace(/'/g, "\\'")}')">${q}</button>`).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function renderMessage(msg) {
+  if (msg.type === 'system') {
+    return `<div class="msg system">${esc(msg.text)}</div>`;
+  }
+  const time = new Date(msg.time).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+  if (msg.type === 'user') {
+    return `
+      <div class="msg user">
+        ${esc(msg.text)}
+        ${msg.photos && msg.photos.length ? msg.photos.map(p => `<img src="${p}" class="msg-photo" onclick="viewPhoto('${p}')">`).join('') : ''}
+        <div class="msg-time">${time}</div>
+      </div>
+    `;
+  }
+  // AI 메시지
+  let content = esc(msg.text);
+  // 과거 사례 박스 렌더링
+  if (msg.cases && msg.cases.length) {
+    content += msg.cases.map(c => `
+      <div class="msg-cases">
+        <strong>📁 ${c.date} - ${c.device}</strong><br>
+        ${esc(c.summary)}
+      </div>
+    `).join('');
+  }
+  // 저장 제안 카드
+  if (msg.saveRecord) {
+    content += renderSaveRecordCard(msg.saveRecord, msg.id);
+  }
+  return `
+    <div class="msg ai">
+      ${content}
+      <div class="msg-time">${time}</div>
+    </div>
+  `;
+}
+
+function renderSaveRecordCard(record, msgId) {
+  return `
+    <div class="save-record-card">
+      <h4>✍️ 이 내용으로 기록할까요?</h4>
+      ${record.deviceType ? `<div class="field"><strong>장비</strong>${esc(record.deviceType)}</div>` : ''}
+      ${record.model ? `<div class="field"><strong>모델</strong>${esc(record.model)}</div>` : ''}
+      ${record.faultType ? `<div class="field"><strong>고장유형</strong>${esc(record.faultType)}</div>` : ''}
+      ${record.symptom ? `<div class="field"><strong>증상</strong>${esc(record.symptom)}</div>` : ''}
+      ${record.cause ? `<div class="field"><strong>원인</strong>${esc(record.cause)}</div>` : ''}
+      ${record.action ? `<div class="field"><strong>조치</strong>${esc(record.action)}</div>` : ''}
+      ${record.parts?.length ? `<div class="field"><strong>교체부품</strong>${esc(record.parts.join(', '))}</div>` : ''}
+      ${record.refrigerant ? `<div class="field"><strong>냉매</strong>${esc(record.refrigerant)} ${record.refAmount ? record.refAmount+'kg' : ''}</div>` : ''}
+      ${record.workTime ? `<div class="field"><strong>작업시간</strong>${esc(record.workTime)}시간</div>` : ''}
+      <div class="save-record-actions">
+        <button class="btn-edit" onclick="editAndGoToForm('${msgId}')">✏️ 수정 후 저장</button>
+        <button class="btn-confirm" onclick="saveFromChat('${msgId}')">💾 바로 저장</button>
+      </div>
+    </div>
+  `;
+}
+
+function getChatPlaceholder() {
+  const ph = {
+    free: '무엇이든 물어보세요...',
+    diagnose: '증상을 설명해주세요...',
+    guide: '어떤 작업 도움이 필요하세요?',
+  };
+  return ph[chatState.mode];
+}
+
+function initChatUI() {
+  setTimeout(() => {
+    const container = $('#chat-messages');
+    if (container) container.scrollTop = container.scrollHeight;
+  }, 50);
+}
+
+function setChatMode(mode) {
+  chatState.mode = mode;
   render();
 }
 
-function chatAsk(q) { chatState.input = q; sendChat(); }
-function clearChat() { chatState.messages = []; chatState.input = ''; render(); }
-
-async function sendChat() {
-  const inputEl = $('#chat-input');
-  if (inputEl) chatState.input = inputEl.value;
-  const text = chatState.input.trim();
-  if (!text || chatState.loading) return;
-  const apiKey = getApiKey();
-  if (!apiKey) { alert('API 키를 먼저 설정하세요'); return; }
-
-  chatState.messages = [...chatState.messages, { role: 'user', content: text }];
-  chatState.input = '';
-  chatState.loading = true;
+function clearChat() {
+  if (!confirm('대화 내용을 모두 삭제할까요?')) return;
+  chatState.messages = [];
+  chatState.pendingPhotos = [];
+  saveChatHistory();
   render();
+}
 
+function useQuickQ(q) {
+  const input = $('#chat-input');
+  if (input) { input.value = q; sendMessage(); }
+}
+
+async function handleChatPhoto(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  if (chatState.pendingPhotos.length >= 3) { alert('한 번에 최대 3장까지 첨부 가능합니다.'); return; }
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-5-20250929',
-        max_tokens: 1500,
-        system: `당신은 냉동공조 전문 수리 도우미 AI입니다. 에어컨, 냉동창고, 냉동공조 시스템의 수리와 유지보수에 대한 전문적인 조언을 제공합니다.
+    const compressed = await resizeImage(file, 1024, 0.7);
+    chatState.pendingPhotos.push(compressed);
+    render();
+  } catch (e) { alert('사진 처리 오류: ' + e.message); }
+  event.target.value = '';
+}
 
-규칙:
-- 냉동공조 분야에 집중하여 전문적이고 실용적인 조언 제공
-- 안전 주의사항은 반드시 포함
-- 단계별로 명확하게 설명
-- 한국어로 답변, 이모지 적절히 활용
-- 모르거나 위험한 작업은 전문가 상담 권유`,
-        messages: chatState.messages.map(m => ({ role: m.role, content: m.content }))
-      })
-    });
-    if (!res.ok) throw new Error(`API 오류: ${res.status}`);
-    const data = await res.json();
-    const answer = data.content?.map(c => c.text || '').join('') || '응답을 받지 못했습니다.';
-    chatState.messages = [...chatState.messages, { role: 'assistant', content: answer }];
-  } catch (e) {
-    chatState.messages = [...chatState.messages, { role: 'assistant', content: `오류: ${e.message}\n\nAPI 키가 올바른지, 인터넷 연결이 정상인지 확인해주세요.` }];
-  }
-  chatState.loading = false;
+function removePendingPhoto(i) {
+  chatState.pendingPhotos.splice(i, 1);
   render();
-  setTimeout(() => {
-    const msgs = document.getElementById('chat-messages');
-    if (msgs) msgs.lastElementChild?.scrollIntoView({ behavior: 'smooth' });
-  }, 100);
+}
+
+function handleChatKeydown(e) {
+  // Enter = 전송, Shift+Enter = 줄바꿈
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+}
+
+// 메시지 전송 & AI 응답 처리
+async function sendMessage() {
+  const input = $('#chat-input');
+  const text = (input?.value || '').trim();
+  const photos = [...chatState.pendingPhotos];
+  if (!text && photos.length === 0) return;
+
+  // 사용자 메시지 추가
+  chatState.messages.push({
+    id: 'u' + Date.now(),
+    type: 'user',
+    text: text || '(사진 첨부)',
+    photos: photos,
+    time: Date.now(),
+  });
+  chatState.pendingPhotos = [];
+  chatState.isLoading = true;
+  saveChatHistory();
+  render();
+
+  // AI 응답 받기
+  try {
+    const response = await callAIAssistant(text, photos);
+    chatState.messages.push({
+      id: 'a' + Date.now(),
+      type: 'ai',
+      text: response.text,
+      cases: response.cases || [],
+      saveRecord: response.saveRecord || null,
+      time: Date.now(),
+    });
+  } catch (e) {
+    chatState.messages.push({
+      id: 'a' + Date.now(),
+      type: 'ai',
+      text: `⚠️ 오류가 발생했어요: ${e.message}\n\nAPI 키 확인 또는 잠시 후 다시 시도해주세요.`,
+      time: Date.now(),
+    });
+  }
+  chatState.isLoading = false;
+  saveChatHistory();
+  render();
+}
+
+// AI 호출 - 과거 기록을 컨텍스트로 사용
+async function callAIAssistant(userText, userPhotos) {
+  const logs = getLogs();
+  const apiKey = getApiKey();
+
+  // 최근 60건 기록 요약
+  const logSummary = logs.slice(0, 60).map((l, i) =>
+    `[${i+1}] 날짜:${l.date} 장비:${l.deviceType} 모델:${l.model||'-'} 고장유형:${l.faultType||'-'} 증상:${l.symptom} 원인:${l.cause||'-'} 조치:${l.action} 부품:${[...(l.parts||[]),l.partsCustom].filter(Boolean).join('/')||'-'} 냉매:${l.refrigerant||'-'} ${l.refAmount||''}kg 고압:${l.highPressure||'-'} 저압:${l.lowPressure||'-'} 시간:${l.workTime||'-'}h 비용:${l.cost||'-'}원 특이사항:${l.specialNote||'-'}`
+  ).join('\n');
+
+  // 모드별 시스템 프롬프트
+  const modePrompts = {
+    free: `자유롭게 대화하며 냉동공조 수리를 도와주세요. 과거 기록을 적극 활용하되, 일반 지식도 함께 제공하세요.`,
+    diagnose: `증상을 듣고 과거 유사 사례를 찾아 진단을 도와주세요. 관련 기록이 있으면 반드시 언급하고, 원인 후보를 확률로 제시하세요. 추가 확인 필요한 측정값(압력, 온도 등)을 질문하세요.`,
+    guide: `단계별로 작업을 안내하세요. 한 단계씩 설명하고, "다음 단계" 말씀하면 이어서 안내. 주의사항도 함께 알려주세요.`,
+  };
+
+  const systemPrompt = `당신은 냉동공조 기사님의 전담 AI 조수입니다. 기사님과 매일 현장에서 함께 일하는 경험 많은 선배처럼 친근하게 대화하세요.
+
+【현재 모드】${chatState.mode === 'diagnose' ? '증상 진단' : chatState.mode === 'guide' ? '단계별 가이드' : '자유 대화'}
+【모드 지침】${modePrompts[chatState.mode]}
+
+【기사님의 과거 수리 기록 (총 ${logs.length}건)】
+${logSummary || '(아직 기록이 없습니다)'}
+
+【응답 규칙】
+1. 한국어, 간결하게, 실무적으로
+2. 과거 유사 사례가 있으면 반드시 인용 ("2개월 전 삼성 SPA에서 같은 증상 있었죠")
+3. 모르는 건 모른다고 솔직히
+4. 위험한 작업은 안전 주의사항 강조
+5. 이모지는 필요할 때만 (과하지 않게)
+6. 마크다운 헤더(#) 사용 금지, 대신 이모지로 섹션 구분
+
+【특수 응답 포맷】
+수리 대화가 마무리되는 느낌이 들면 (작업 완료, 해결됨 등의 표현), 답변 마지막에 다음 JSON을 정확히 포함하세요:
+
+<SAVE_RECORD>
+{"deviceType":"...","model":"...","faultType":"...","symptom":"...","cause":"...","action":"...","parts":["..."],"refrigerant":"...","refAmount":"...","workTime":"...","cost":"","memo":""}
+</SAVE_RECORD>
+
+값을 모르는 필드는 빈 문자열. parts는 배열. 이 태그는 기록 저장 제안 카드로 변환됩니다.
+
+과거 유사 사례를 참조할 때 답변 중간에 다음 포맷 사용 가능:
+<CASE date="2025-10-15" device="에어컨(상업용)">드레인 호스 각도 불량, 재설치로 해결</CASE>`;
+
+  // 최근 대화 히스토리 (최근 10개)
+  const recentMessages = chatState.messages.slice(-10).filter(m => m.type !== 'system').map(m => {
+    if (m.type === 'user') {
+      const content = [{ type: 'text', text: m.text }];
+      if (m.photos && m.photos.length) {
+        m.photos.forEach(p => {
+          const match = p.match(/^data:(image\/\w+);base64,(.+)$/);
+          if (match) {
+            content.unshift({
+              type: 'image',
+              source: { type: 'base64', media_type: match[1], data: match[2] }
+            });
+          }
+        });
+      }
+      return { role: 'user', content };
+    }
+    return { role: 'assistant', content: m.text };
+  });
+
+  // 현재 메시지
+  const currentContent = [];
+  userPhotos.forEach(p => {
+    const match = p.match(/^data:(image\/\w+);base64,(.+)$/);
+    if (match) {
+      currentContent.push({
+        type: 'image',
+        source: { type: 'base64', media_type: match[1], data: match[2] }
+      });
+    }
+  });
+  if (userText) currentContent.push({ type: 'text', text: userText });
+  if (currentContent.length === 0) currentContent.push({ type: 'text', text: '(이미지 분석 부탁드려요)' });
+
+  // 마지막 메시지는 currentContent로 교체
+  const messages = recentMessages.slice(0, -1);
+  messages.push({ role: 'user', content: currentContent });
+
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true',
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1500,
+      system: systemPrompt,
+      messages: messages,
+    }),
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`API ${res.status}: ${err.slice(0, 100)}`);
+  }
+
+  const data = await res.json();
+  let fullText = data.content?.map(c => c.text || '').join('') || '';
+
+  // SAVE_RECORD 태그 파싱
+  let saveRecord = null;
+  const saveMatch = fullText.match(/<SAVE_RECORD>\s*([\s\S]*?)\s*<\/SAVE_RECORD>/);
+  if (saveMatch) {
+    try {
+      saveRecord = JSON.parse(saveMatch[1]);
+      fullText = fullText.replace(/<SAVE_RECORD>[\s\S]*?<\/SAVE_RECORD>/, '').trim();
+    } catch (e) { console.error('SAVE_RECORD 파싱 실패', e); }
+  }
+
+  // CASE 태그 파싱
+  const cases = [];
+  const caseRegex = /<CASE\s+date="([^"]*)"\s+device="([^"]*)">([^<]+)<\/CASE>/g;
+  let m;
+  while ((m = caseRegex.exec(fullText)) !== null) {
+    cases.push({ date: m[1], device: m[2], summary: m[3] });
+  }
+  fullText = fullText.replace(/<CASE[^>]*>[^<]*<\/CASE>/g, '').trim();
+
+  return { text: fullText, cases, saveRecord };
+}
+
+// 대화에서 나온 기록을 바로 저장
+function saveFromChat(msgId) {
+  const msg = chatState.messages.find(m => m.id === msgId);
+  if (!msg || !msg.saveRecord) return;
+  const r = msg.saveRecord;
+  if (!r.deviceType || !r.symptom || !r.action) {
+    alert('장비, 증상, 조치 내용이 필요해요. "수정 후 저장"으로 보완해주세요!');
+    return;
+  }
+  // 저장 데이터 구성
+  const newLog = {
+    id: Date.now(),
+    createdAt: new Date().toISOString(),
+    date: new Date().toISOString().slice(0, 10),
+    deviceType: r.deviceType || '',
+    model: r.model || '',
+    location: r.location || '',
+    faultType: r.faultType || '',
+    symptom: r.symptom || '',
+    cause: r.cause || '',
+    action: r.action || '',
+    parts: r.parts || [],
+    partsCustom: '',
+    refrigerant: r.refrigerant || '',
+    refAmount: r.refAmount || '',
+    highPressure: r.highPressure || '',
+    lowPressure: r.lowPressure || '',
+    workTime: r.workTime || '',
+    cost: r.cost || '',
+    specialNote: r.specialNote || '',
+    memo: r.memo || '(AI 대화에서 자동 기록)',
+    photos: [],
+  };
+  try {
+    const logs = getLogs();
+    saveLogs([newLog, ...logs]);
+    // 시스템 메시지 추가
+    chatState.messages.push({
+      id: 's' + Date.now(),
+      type: 'system',
+      text: '✅ 기록이 저장되었습니다!',
+      time: Date.now(),
+    });
+    saveChatHistory();
+    render();
+  } catch (e) {
+    alert('저장 실패: ' + e.message);
+  }
+}
+
+// 대화 내용으로 기록 폼에 채워서 이동
+function editAndGoToForm(msgId) {
+  const msg = chatState.messages.find(m => m.id === msgId);
+  if (!msg || !msg.saveRecord) return;
+  const r = msg.saveRecord;
+  formState = {
+    date: new Date().toISOString().slice(0, 10),
+    deviceType: r.deviceType || '',
+    model: r.model || '',
+    location: r.location || '',
+    faultType: r.faultType || '',
+    symptom: r.symptom || '',
+    cause: r.cause || '',
+    action: r.action || '',
+    parts: r.parts || [],
+    partsCustom: '',
+    refrigerant: r.refrigerant || '',
+    refAmount: r.refAmount || '',
+    highPressure: r.highPressure || '',
+    lowPressure: r.lowPressure || '',
+    workTime: r.workTime || '',
+    cost: r.cost || '',
+    specialNote: r.specialNote || '',
+    memo: r.memo || '(AI 대화에서 생성)',
+    photos: [],
+  };
+  currentTab = 0;
+  document.querySelectorAll('.tab').forEach((b, i) => {
+    b.classList.toggle('active', i === 0);
+  });
+  render();
 }
 
 // ── 렌더링 ────────────────────────────────────────────────
 function render() {
-  const views = { 0: LogForm, 1: LogList, 2: AIAnalysis, 3: Stats, 4: AIAssistant };
+  const views = { 0: LogForm, 1: LogList, 2: AIAssistant, 3: AIAnalysis, 4: Stats };
   $('#app').innerHTML = views[currentTab]();
+  if (currentTab === 2) initChatUI();
 }
 
 // ── PWA 설치 안내 ────────────────────────────────────────
