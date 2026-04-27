@@ -397,6 +397,7 @@ function LogForm() {
       formState = {
         date: new Date().toISOString().slice(0,10),
         deviceType: '', model: '', location: '',
+        coolerHP: '', outdoorHP: '',
         faultType: '', symptom: '', cause: '', action: '',
         parts: [], partsCustom: '',
         refrigerant: '', refAmount: '',
@@ -418,11 +419,25 @@ function LogForm() {
 
       <div class="card">
         <span class="lbl">🔧 장비 정보</span>
-        <select class="mb8" onchange="setField('deviceType', this.value)">
+        <select class="mb8" onchange="setField('deviceType', this.value); render()">
           <option value="">장비 종류 선택 *</option>
           ${DEVICE_TYPES.map(d => `<option ${f.deviceType === d ? 'selected' : ''}>${d}</option>`).join('')}
         </select>
-        <input class="mb8" placeholder="모델명 (예: LG 휘센 FQ18)" value="${esc(f.model)}" oninput="setField('model', this.value)">
+        ${['에어컨(가정용)', '에어컨(상업용)'].includes(f.deviceType) ? `
+          <input class="mb8" placeholder="모델명 (예: LG 휘센 FQ18)" value="${esc(f.model)}" oninput="setField('model', this.value)">
+        ` : ''}
+        ${['냉동창고', '기타 냉동공조'].includes(f.deviceType) ? `
+          <div class="row mb8">
+            <div>
+              <span class="lbl" style="margin-bottom:4px">쿨러 마력 (HP)</span>
+              <input placeholder="예: 3" value="${esc(f.coolerHP)}" oninput="setField('coolerHP', this.value)">
+            </div>
+            <div>
+              <span class="lbl" style="margin-bottom:4px">실외기 마력 (HP)</span>
+              <input placeholder="예: 5" value="${esc(f.outdoorHP)}" oninput="setField('outdoorHP', this.value)">
+            </div>
+          </div>
+        ` : ''}
         <input placeholder="설치 위치 / 고객명" value="${esc(f.location)}" oninput="setField('location', this.value)">
       </div>
 
@@ -633,6 +648,10 @@ function LogList() {
       ['🔍 원인', sel.cause],
       ['🛠️ 조치내용', sel.action],
       ['🔩 교체부품', [...(sel.parts || []), sel.partsCustom].filter(Boolean).join(', ')],
+      ...(['냉동창고', '기타 냉동공조'].includes(sel.deviceType) ? [
+        ['⚡ 쿨러 마력', sel.coolerHP ? sel.coolerHP + ' HP' : ''],
+        ['🏭 실외기 마력', sel.outdoorHP ? sel.outdoorHP + ' HP' : ''],
+      ] : []),
       ['❄️ 냉매', [sel.refrigerant, sel.refAmount ? sel.refAmount + 'kg' : ''].filter(Boolean).join(' ')],
       ['📊 압력', [sel.highPressure ? '고압: ' + sel.highPressure : '', sel.lowPressure ? '저압: ' + sel.lowPressure : ''].filter(Boolean).join(' / ')],
       ['⏱️ 작업시간', sel.workTime ? sel.workTime + '시간' : ''],
