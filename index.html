@@ -740,7 +740,7 @@ function LogList() {
       ...(['냉동창고', '기타 냉동공조'].includes(sel.deviceType) ? [
         ['⚡ 쿨러 마력', sel.coolerHP ? sel.coolerHP + ' HP' : ''],
         ['🏭 실외기 마력', sel.outdoorHP ? sel.outdoorHP + ' HP' : ''],
-        ['🔩 콤프 마력', sel.compHP ? sel.compHP + ' HP' : ''],
+        ['🔩 콤프 마력', sel.compHP || ''],
       ] : []),
       ['❄️ 냉매', [sel.refrigerant, sel.refAmount ? sel.refAmount + 'kg' : ''].filter(Boolean).join(' ')],
       ['📊 압력', [sel.highPressure ? '고압: ' + sel.highPressure : '', sel.lowPressure ? '저압: ' + sel.lowPressure : ''].filter(Boolean).join(' / ')],
@@ -814,7 +814,7 @@ function LogList() {
           <div class="sb" style="margin-bottom:6px">
             <div style="flex:1;min-width:0">
               ${['냉동창고', '기타 냉동공조'].includes(log.deviceType)
-                ? `<div style="font-size:14px;font-weight:800;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${[log.coolerHP ? '쿨러 '+log.coolerHP+'HP' : '', log.outdoorHP ? '실외기 '+log.outdoorHP+'HP' : '', log.compHP ? '콤프 '+log.compHP+'HP' : ''].filter(Boolean).join(' / ') || '마력 미입력'}</div>`
+                ? `<div style="font-size:14px;font-weight:800;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${[log.coolerHP ? '쿨러 '+log.coolerHP+'HP' : '', log.outdoorHP ? '실외기 '+log.outdoorHP+'HP' : '', log.compHP ? '콤프 '+log.compHP : ''].filter(Boolean).join(' / ') || '마력 미입력'}</div>`
                 : log.model ? `<div style="font-size:15px;font-weight:800;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(log.model)}</div>` : `<div style="font-size:15px;font-weight:800;color:var(--muted)">모델명 없음</div>`
               }
               ${log.location ? `<div style="font-size:13px;color:var(--accent);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">📍 ${esc(log.location)}</div>` : ''}
