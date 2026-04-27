@@ -166,15 +166,14 @@ textarea { min-height: 72px; resize: vertical; }
   -webkit-overflow-scrolling: touch;
 }
 .msg {
-  display: inline-block;
-  max-width: 72%; padding: 4px 8px; border-radius: 6px;
+  padding: 4px 8px; border-radius: 6px;
   font-size: 13px; line-height: 1.4; white-space: pre-wrap; word-break: break-word;
 }
 .msg-wrap {
-  display: flex; flex-direction: column;
+  display: flex; flex-direction: column; max-width: 72%;
 }
-.msg-wrap.user { align-items: flex-end; }
-.msg-wrap.ai { align-items: flex-start; }
+.msg-wrap.user { align-self: flex-end; align-items: flex-end; }
+.msg-wrap.ai { align-self: flex-start; align-items: flex-start; }
 .msg.user {
   background: #fee500;
   color: #111;
