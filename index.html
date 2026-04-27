@@ -508,12 +508,12 @@ function LogForm() {
           </div>
           <div class="row mb8">
             <div>
-              <span class="lbl" style="margin-bottom:4px">와트수 (W)</span>
-              <input placeholder="예: 200" value="${esc(f.coolerFanWatt)}" oninput="setField('coolerFanWatt', this.value)">
+              <span class="lbl" style="margin-bottom:4px">와트수 (kW)</span>
+              <input placeholder="예: 0.2kw" value="${esc(f.coolerFanWatt)}" oninput="setField('coolerFanWatt', this.value)">
             </div>
             <div>
-              <span class="lbl" style="margin-bottom:4px">날개 크기</span>
-              <input placeholder="예: 450mm" value="${esc(f.coolerFanBlade)}" oninput="setField('coolerFanBlade', this.value)">
+              <span class="lbl" style="margin-bottom:4px">날개 크기 (φ)</span>
+              <input placeholder="예: φ450" value="${esc(f.coolerFanBlade)}" oninput="setField('coolerFanBlade', this.value)">
             </div>
           </div>
           <span class="lbl" style="margin-bottom:6px">🌀 실외기 팬모터</span>
@@ -524,12 +524,12 @@ function LogForm() {
           </div>
           <div class="row mb8">
             <div>
-              <span class="lbl" style="margin-bottom:4px">와트수 (W)</span>
-              <input placeholder="예: 200" value="${esc(f.outdoorFanWatt)}" oninput="setField('outdoorFanWatt', this.value)">
+              <span class="lbl" style="margin-bottom:4px">와트수 (kW)</span>
+              <input placeholder="예: 0.2kw" value="${esc(f.outdoorFanWatt)}" oninput="setField('outdoorFanWatt', this.value)">
             </div>
             <div>
-              <span class="lbl" style="margin-bottom:4px">날개 크기</span>
-              <input placeholder="예: 450mm" value="${esc(f.outdoorFanBlade)}" oninput="setField('outdoorFanBlade', this.value)">
+              <span class="lbl" style="margin-bottom:4px">날개 크기 (φ)</span>
+              <input placeholder="예: φ450" value="${esc(f.outdoorFanBlade)}" oninput="setField('outdoorFanBlade', this.value)">
             </div>
           </div>
         ` : ''}
@@ -775,8 +775,8 @@ function LogList() {
         ['⚡ 쿨러 마력', sel.coolerHP ? sel.coolerHP + ' HP' : ''],
         ['🏭 실외기 마력', sel.outdoorHP ? sel.outdoorHP + ' HP' : ''],
         ['🔩 콤프 마력', sel.compHP || ''],
-        ['🌀 쿨러 팬모터', [sel.coolerFanType, sel.coolerFanWatt ? sel.coolerFanWatt+'W' : '', sel.coolerFanBlade].filter(Boolean).join(' / ')],
-        ['🌀 실외기 팬모터', [sel.outdoorFanType, sel.outdoorFanWatt ? sel.outdoorFanWatt+'W' : '', sel.outdoorFanBlade].filter(Boolean).join(' / ')],
+        ['🌀 쿨러 팬모터', [sel.coolerFanType, sel.coolerFanWatt ? sel.coolerFanWatt+'kW' : '', sel.coolerFanBlade].filter(Boolean).join(' / ')],
+        ['🌀 실외기 팬모터', [sel.outdoorFanType, sel.outdoorFanWatt ? sel.outdoorFanWatt+'kW' : '', sel.outdoorFanBlade].filter(Boolean).join(' / ')],
       ] : []),
       ['❄️ 냉매', [sel.refrigerant, sel.refAmount ? sel.refAmount + 'kg' : ''].filter(Boolean).join(' ')],
       ['📊 압력', [sel.highPressure ? '고압: ' + sel.highPressure : '', sel.lowPressure ? '저압: ' + sel.lowPressure : ''].filter(Boolean).join(' / ')],
