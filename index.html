@@ -1424,12 +1424,15 @@ function updateChatHeight() {
   if (!chatContainer || currentTab !== 2) return;
   const vp = window.visualViewport;
   const vh = vp ? vp.height : window.innerHeight;
+  const offsetTop = vp ? vp.offsetTop : 0;
   const header = document.querySelector('.header');
   const tabs = document.querySelector('.tabs');
   const toolbar = document.querySelector('.chat-toolbar');
   const used = (header?.offsetHeight || 50) + (tabs?.offsetHeight || 44) + (toolbar?.offsetHeight || 44);
   chatContainer.style.height = Math.max(200, vh - used) + 'px';
-  window.scrollTo(0, 0);
+  chatContainer.style.transform = `translateY(${offsetTop}px)`;
+  const msgs = document.querySelector('#chat-messages');
+  if (msgs) msgs.scrollTop = msgs.scrollHeight;
 }
 
 function initChatUI() {
@@ -1438,7 +1441,6 @@ function initChatUI() {
     updateChatHeight();
     const container = $('#chat-messages');
     if (container) container.scrollTop = container.scrollHeight;
-    // iOS: 입력창 포커스 시 높이 재조정
     const input = $('#chat-input');
     if (input) {
       input.addEventListener('focus', () => setTimeout(updateChatHeight, 300));
@@ -1449,7 +1451,7 @@ function initChatUI() {
 
 if (window.visualViewport) {
   window.visualViewport.addEventListener('resize', updateChatHeight);
-  window.visualViewport.addEventListener('scroll', () => window.scrollTo(0, 0));
+  window.visualViewport.addEventListener('scroll', updateChatHeight);
 }
 
 function setChatMode(mode) {
