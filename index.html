@@ -158,7 +158,6 @@ textarea { min-height: 72px; resize: vertical; }
 /* AI 도우미 채팅 UI */
 .chat-container {
   display: flex; flex-direction: column;
-  height: calc(100dvh - 180px);
 }
 .chat-messages {
   flex: 1; min-height: 0; overflow-y: auto; padding: 14px;
@@ -1422,7 +1421,7 @@ function getChatPlaceholder() {
 
 function updateChatHeight() {
   const chatContainer = document.querySelector('.chat-container');
-  if (!chatContainer) return;
+  if (!chatContainer || currentTab !== 2) return;
   const vp = window.visualViewport;
   const vh = vp ? vp.height : window.innerHeight;
   const header = document.querySelector('.header');
@@ -1430,21 +1429,27 @@ function updateChatHeight() {
   const toolbar = document.querySelector('.chat-toolbar');
   const used = (header?.offsetHeight || 50) + (tabs?.offsetHeight || 44) + (toolbar?.offsetHeight || 44);
   chatContainer.style.height = Math.max(200, vh - used) + 'px';
+  window.scrollTo(0, 0);
 }
 
 function initChatUI() {
   document.body.style.overflow = 'hidden';
-  updateChatHeight();
   setTimeout(() => {
+    updateChatHeight();
     const container = $('#chat-messages');
     if (container) container.scrollTop = container.scrollHeight;
+    // iOS: 입력창 포커스 시 높이 재조정
+    const input = $('#chat-input');
+    if (input) {
+      input.addEventListener('focus', () => setTimeout(updateChatHeight, 300));
+      input.addEventListener('blur', () => setTimeout(updateChatHeight, 300));
+    }
   }, 50);
 }
 
 if (window.visualViewport) {
-  window.visualViewport.addEventListener('resize', () => {
-    if (currentTab === 2) updateChatHeight();
-  });
+  window.visualViewport.addEventListener('resize', updateChatHeight);
+  window.visualViewport.addEventListener('scroll', () => window.scrollTo(0, 0));
 }
 
 function setChatMode(mode) {
