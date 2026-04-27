@@ -544,15 +544,10 @@ function LogForm() {
               <span class="chip ${f.electricType === t ? 'active' : ''}" style="flex:1;text-align:center" onclick="setField('electricType','${f.electricType === t ? '' : t}'); render()">${t}</span>
             `).join('')}
           </div>
-          <span class="lbl" style="margin-bottom:6px">🗄️ 컨트롤박스 제조사</span>
-          <div style="display:flex;gap:8px;margin-bottom:8px">
-            ${['우리엘', '기타'].map(t => `
-              <span class="chip ${f.controlBoxMaker === t ? 'active' : ''}" style="flex:1;text-align:center" onclick="setField('controlBoxMaker','${f.controlBoxMaker === t ? '' : t}'); render()">${t}</span>
-            `).join('')}
+          <div class="mb8">
+            <span class="lbl" style="margin-bottom:4px">🗄️ 컨트롤박스 제조사</span>
+            <input placeholder="예: 우리엘" value="${esc(f.controlBoxMaker)}" oninput="setField('controlBoxMaker', this.value)">
           </div>
-          ${f.controlBoxMaker === '기타' ? `
-            <input class="mb8" placeholder="제조사명 직접 입력" value="${esc(f.controlBoxMakerCustom)}" oninput="setField('controlBoxMakerCustom', this.value)">
-          ` : ''}
           <span class="lbl" style="margin-bottom:6px">🌀 쿨러 팬모터</span>
           <div style="display:flex;gap:8px;margin-bottom:8px">
             ${['모터형', '일체형'].map(t => `
@@ -829,7 +824,7 @@ function LogList() {
         ['🏭 실외기', [sel.outdoorHP ? sel.outdoorHP+'HP' : '', sel.outdoorMaker, sel.outdoorDriveType].filter(Boolean).join(' / ')],
         ['🔩 콤프', [sel.compHP, sel.compType, sel.compMaker].filter(Boolean).join(' / ')],
         ['⚡ 전기 방식', sel.electricType || ''],
-        ['🗄️ 컨트롤박스', sel.controlBoxMaker === '기타' ? (sel.controlBoxMakerCustom || '기타') : (sel.controlBoxMaker || '')],
+        ['🗄️ 컨트롤박스', sel.controlBoxMaker || ''],
         ['🌀 쿨러 팬모터', [sel.coolerFanType, sel.coolerFanWatt ? sel.coolerFanWatt+'kW' : '', sel.coolerFanBlade].filter(Boolean).join(' / ')],
         ['🌀 실외기 팬모터', [sel.outdoorFanType, sel.outdoorFanWatt ? sel.outdoorFanWatt+'kW' : '', sel.outdoorFanBlade].filter(Boolean).join(' / ')],
       ] : []),
