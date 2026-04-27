@@ -396,7 +396,11 @@ async function initApp() {
       }
     } catch { logs = []; }
   }
-  _logsCache = logs || [];
+  logs = (logs || []).map(l => ({
+    ...l,
+    parts: (l.parts || []).filter(p => p !== '팬모터')
+  }));
+  _logsCache = logs;
   render();
   showInstallGuide();
 }
