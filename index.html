@@ -820,15 +820,6 @@ function LogList() {
       ['🔍 원인', sel.cause],
       ['🛠️ 조치내용', sel.action],
       ['🔩 교체부품', [...(sel.parts || []), sel.partsCustom].filter(Boolean).join(', ')],
-      ...(['냉동창고', '기타 냉동공조'].includes(sel.deviceType) ? [
-        ['⚡ 쿨러', [sel.coolerHP ? sel.coolerHP+'HP' : '', sel.coolerMaker].filter(Boolean).join(' / ')],
-        ['🏭 실외기', [sel.outdoorHP ? sel.outdoorHP+'HP' : '', sel.outdoorMaker, sel.outdoorDriveType].filter(Boolean).join(' / ')],
-        ['🔩 콤프', [sel.compHP, sel.compType, sel.compMaker].filter(Boolean).join(' / ')],
-        ['⚡ 전기 방식', sel.electricType || ''],
-        ['🗄️ 컨트롤박스', sel.controlBoxMaker || ''],
-        ['🌀 쿨러 팬모터', [sel.coolerFanType, sel.coolerFanWatt ? sel.coolerFanWatt+'kW' : '', sel.coolerFanBlade].filter(Boolean).join(' / ')],
-        ['🌀 실외기 팬모터', [sel.outdoorFanType, sel.outdoorFanWatt ? sel.outdoorFanWatt+'kW' : '', sel.outdoorFanBlade].filter(Boolean).join(' / ')],
-      ] : []),
       ['❄️ 냉매', [sel.refrigerant, sel.refAmount ? sel.refAmount + 'kg' : ''].filter(Boolean).join(' ')],
       ['📊 압력', [sel.highPressure ? '고압: ' + sel.highPressure : '', sel.lowPressure ? '저압: ' + sel.lowPressure : ''].filter(Boolean).join(' / ')],
       ['⏱️ 작업시간', sel.workTime ? sel.workTime + '시간' : ''],
@@ -882,6 +873,56 @@ function LogList() {
                 </div>
               `).join('')}
             </div>
+          </div>
+        ` : ''}
+        ${['냉동창고', '기타 냉동공조'].includes(sel.deviceType) ? `
+          <div class="card">
+            <span class="lbl">🏭 장비 제원</span>
+            <div style="display:flex;flex-direction:column;gap:10px;margin-top:4px">
+              ${[
+                { label: '쿨러', hp: sel.coolerHP, maker: sel.coolerMaker },
+                { label: '실외기', hp: sel.outdoorHP, maker: sel.outdoorMaker, extra: sel.outdoorDriveType },
+                { label: '콤프', hp: sel.compHP, maker: sel.compMaker, extra: sel.compType },
+              ].map(item => (item.hp || item.maker || item.extra) ? `
+                <div style="background:var(--subtle);border-radius:8px;padding:10px 12px">
+                  <div style="font-size:10px;color:var(--accent);font-weight:700;letter-spacing:1px;margin-bottom:6px">${item.label.toUpperCase()}</div>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px">
+                    ${item.hp ? `<span style="font-size:16px;font-weight:800;color:var(--text)">${esc(item.hp)} HP</span>` : ''}
+                    ${item.maker ? `<span style="font-size:13px;color:var(--accent);align-self:flex-end;margin-bottom:2px">${esc(item.maker)}</span>` : ''}
+                    ${item.extra ? `<span class="tag accent2" style="align-self:flex-end">${esc(item.extra)}</span>` : ''}
+                  </div>
+                </div>
+              ` : '').filter(Boolean).join('')}
+            </div>
+            ${sel.electricType || sel.controlBoxMaker ? `
+              <hr>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+                ${sel.electricType ? `<div style="flex:1;background:var(--subtle);border-radius:8px;padding:8px 12px"><div style="font-size:10px;color:var(--accent);font-weight:700;letter-spacing:1px;margin-bottom:4px">전기방식</div><div style="font-size:14px;font-weight:700;color:var(--text)">${esc(sel.electricType)}</div></div>` : ''}
+                ${sel.controlBoxMaker ? `<div style="flex:1;background:var(--subtle);border-radius:8px;padding:8px 12px"><div style="font-size:10px;color:var(--accent);font-weight:700;letter-spacing:1px;margin-bottom:4px">컨트롤박스</div><div style="font-size:14px;font-weight:700;color:var(--text)">${esc(sel.controlBoxMaker)}</div></div>` : ''}
+              </div>
+            ` : ''}
+            ${(sel.coolerFanType || sel.coolerFanWatt || sel.coolerFanBlade || sel.outdoorFanType || sel.outdoorFanWatt || sel.outdoorFanBlade) ? `
+              <hr>
+              <div style="font-size:10px;color:var(--accent);font-weight:700;letter-spacing:1px;margin-bottom:8px">팬모터</div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                ${(sel.coolerFanType || sel.coolerFanWatt || sel.coolerFanBlade) ? `
+                  <div style="flex:1;background:var(--subtle);border-radius:8px;padding:8px 12px;min-width:120px">
+                    <div style="font-size:10px;color:var(--muted);margin-bottom:4px">쿨러 팬모터</div>
+                    ${sel.coolerFanType ? `<div style="font-size:13px;font-weight:700;color:var(--text)">${esc(sel.coolerFanType)}</div>` : ''}
+                    ${sel.coolerFanWatt ? `<div style="font-size:12px;color:var(--muted)">${esc(sel.coolerFanWatt)} kW</div>` : ''}
+                    ${sel.coolerFanBlade ? `<div style="font-size:12px;color:var(--muted)">${esc(sel.coolerFanBlade)}</div>` : ''}
+                  </div>
+                ` : ''}
+                ${(sel.outdoorFanType || sel.outdoorFanWatt || sel.outdoorFanBlade) ? `
+                  <div style="flex:1;background:var(--subtle);border-radius:8px;padding:8px 12px;min-width:120px">
+                    <div style="font-size:10px;color:var(--muted);margin-bottom:4px">실외기 팬모터</div>
+                    ${sel.outdoorFanType ? `<div style="font-size:13px;font-weight:700;color:var(--text)">${esc(sel.outdoorFanType)}</div>` : ''}
+                    ${sel.outdoorFanWatt ? `<div style="font-size:12px;color:var(--muted)">${esc(sel.outdoorFanWatt)} kW</div>` : ''}
+                    ${sel.outdoorFanBlade ? `<div style="font-size:12px;color:var(--muted)">${esc(sel.outdoorFanBlade)}</div>` : ''}
+                  </div>
+                ` : ''}
+              </div>
+            ` : ''}
           </div>
         ` : ''}
         ${fields.map(([k, v]) => `
