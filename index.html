@@ -840,25 +840,25 @@ function LogList() {
     return `
       <div class="sec">
         <button class="btn-sm back-btn" onclick="selectedLog=null; render()">← 목록</button>
-        <div class="card">
-          <div class="sb" style="margin-bottom:8px">
-            <span class="tag accent">${esc(sel.deviceType)}</span>
-            <span style="color:var(--muted);font-size:11px">${fmt(sel.date)}</span>
+        <div class="card" style="border-color:rgba(0,212,255,0.25);background:linear-gradient(135deg,#0f1e2e,#0a1520)">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+            <span class="tag accent" style="font-size:12px">${esc(sel.deviceType)}</span>
+            <span style="color:var(--muted);font-size:12px">${fmt(sel.date)}</span>
           </div>
-          ${sel.model ? `<div style="font-size:12px;color:var(--muted);margin-bottom:4px">📦 ${esc(sel.model)}</div>` : ''}
-          ${sel.shopName ? `<div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">🏪 ${esc(sel.shopName)}</div>` : ''}
+          ${sel.shopName ? `<div style="font-size:19px;font-weight:800;color:var(--text);margin-bottom:4px">🏪 ${esc(sel.shopName)}</div>` : ''}
+          ${sel.model ? `<div style="font-size:14px;color:var(--accent);margin-bottom:6px">📦 ${esc(sel.model)}</div>` : ''}
           ${sel.location ? `
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
-              <span style="font-size:12px;color:var(--muted);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">📍 ${esc(sel.location)}</span>
-              <a href="https://map.kakao.com/link/search/${encodeURIComponent(sel.location)}" target="_blank" style="text-decoration:none">
-                <button class="btn-sm" style="white-space:nowrap;background:rgba(255,193,7,0.15);color:#FEE500;border-color:rgba(255,193,7,0.4)">🗺️ 카카오맵</button>
+            <div style="font-size:13px;color:var(--muted);margin-bottom:10px">📍 ${esc(sel.location)}</div>
+            <div style="display:flex;gap:8px">
+              <a href="https://map.kakao.com/link/search/${encodeURIComponent(sel.location)}" target="_blank" style="text-decoration:none;flex:1">
+                <button class="btn-sm" style="width:100%;justify-content:center;background:rgba(255,193,7,0.15);color:#FEE500;border-color:rgba(255,193,7,0.4)">🗺️ 카카오맵</button>
               </a>
-              <a href="tmap://search?name=${encodeURIComponent(sel.location)}" style="text-decoration:none">
-                <button class="btn-sm" style="white-space:nowrap;background:rgba(0,122,255,0.15);color:#4A9EFF;border-color:rgba(0,122,255,0.4)">🧭 T맵</button>
+              <a href="tmap://search?name=${encodeURIComponent(sel.location)}" style="text-decoration:none;flex:1">
+                <button class="btn-sm" style="width:100%;justify-content:center;background:rgba(0,122,255,0.15);color:#4A9EFF;border-color:rgba(0,122,255,0.4)">🧭 T맵</button>
               </a>
             </div>
           ` : ''}
-          ${sel.faultType ? `<span class="tag warn">${esc(sel.faultType)}</span>` : ''}
+          ${sel.faultType ? `<div style="margin-top:10px"><span class="tag warn" style="font-size:12px">${esc(sel.faultType)}</span></div>` : ''}
         </div>
         ${sel.photos && sel.photos.length > 0 ? `
           <div class="card">
