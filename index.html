@@ -669,16 +669,11 @@ function saveForm() {
     }
     return;
   }
-  const btn = $('#save-btn');
-  btn.className = 'btn success';
-  btn.textContent = '✅ 저장 완료!';
-  setTimeout(() => {
-    formState = null;
-    editingLogId = null;
-    currentTab = 1;
-    document.querySelectorAll('.tab').forEach((b, i) => b.classList.toggle('active', i === 1));
-    render();
-  }, 1400);
+  formState = null;
+  editingLogId = null;
+  currentTab = 1;
+  document.querySelectorAll('.tab').forEach((b, i) => b.classList.toggle('active', i === 1));
+  render();
 }
 
 function cancelEdit() {
