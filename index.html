@@ -701,7 +701,8 @@ function LogList() {
           <div style="font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(log.symptom)}</div>
           ${log.parts && log.parts.length > 0 ? `<div style="font-size:10px;color:var(--muted);margin-top:4px">🔩 ${esc(log.parts.slice(0,3).join(', '))}${log.parts.length > 3 ? ' ...' : ''}</div>` : ''}
           ${log.specialNote ? `<div style="font-size:10px;color:var(--warning);margin-top:3px">📌 ${esc(log.specialNote.slice(0,40))}${log.specialNote.length > 40 ? '...' : ''}</div>` : ''}
-          <div class="sb" style="justify-content:flex-end;margin-top:8px">
+          <div class="sb" style="justify-content:flex-end;margin-top:8px;gap:6px">
+            <button class="btn-sm" onclick="event.stopPropagation();editLog(${log.id})">✏️ 수정</button>
             <button class="btn-sm danger" onclick="event.stopPropagation();deleteLog(${log.id})">삭제</button>
           </div>
         </div>
