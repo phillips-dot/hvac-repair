@@ -412,12 +412,6 @@ function LogForm() {
 
   return `
     <div class="sec">
-      ${editingLogId !== null ? `
-        <div style="display:flex;gap:8px;margin-bottom:10px">
-          <button class="btn danger" style="flex:1" onclick="cancelEdit()">✕ 수정 취소</button>
-          <button class="btn" style="flex:2" onclick="saveForm()">✏️ 수정 저장</button>
-        </div>
-      ` : ''}
       <div class="card">
         <span class="lbl">📅 수리 날짜</span>
         <input type="date" value="${esc(f.date)}" onchange="setField('date', this.value)">
@@ -530,8 +524,9 @@ function LogForm() {
         <textarea placeholder="기타 메모" oninput="setField('memo', this.value)">${esc(f.memo)}</textarea>
       </div>
 
-      ${editingLogId === null ? `
-        <button class="btn" id="save-btn" onclick="saveForm()">💾 수리 기록 저장</button>
+      <button class="btn" id="save-btn" onclick="saveForm()">${editingLogId !== null ? '✏️ 수정 저장' : '💾 수리 기록 저장'}</button>
+      ${editingLogId !== null ? `
+        <button class="btn danger" style="margin-top:8px" onclick="cancelEdit()">✕ 수정 취소</button>
       ` : ''}
     </div>
   `;
