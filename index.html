@@ -1414,12 +1414,31 @@ function getChatPlaceholder() {
   return ph[chatState.mode] || '';
 }
 
+function updateChatHeight() {
+  const chatContainer = document.querySelector('.chat-container');
+  if (!chatContainer) return;
+  const vp = window.visualViewport;
+  const vh = vp ? vp.height : window.innerHeight;
+  const header = document.querySelector('.header');
+  const tabs = document.querySelector('.tabs');
+  const toolbar = document.querySelector('.chat-toolbar');
+  const used = (header?.offsetHeight || 50) + (tabs?.offsetHeight || 44) + (toolbar?.offsetHeight || 44);
+  chatContainer.style.height = Math.max(200, vh - used) + 'px';
+}
+
 function initChatUI() {
   document.body.style.overflow = 'hidden';
+  updateChatHeight();
   setTimeout(() => {
     const container = $('#chat-messages');
     if (container) container.scrollTop = container.scrollHeight;
   }, 50);
+}
+
+if (window.visualViewport) {
+  window.visualViewport.addEventListener('resize', () => {
+    if (currentTab === 2) updateChatHeight();
+  });
 }
 
 function setChatMode(mode) {
