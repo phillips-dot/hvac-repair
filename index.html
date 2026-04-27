@@ -649,10 +649,6 @@ function viewPhoto(src) {
 
 function saveForm() {
   const f = formState;
-  if (!f.deviceType || !f.symptom || !f.action) {
-    alert('장비종류, 증상, 조치내용은 필수입니다.');
-    return;
-  }
   const logs = getLogs();
   try {
     if (editingLogId !== null) {
