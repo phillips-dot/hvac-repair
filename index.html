@@ -455,7 +455,8 @@ function LogForm() {
         date: new Date().toISOString().slice(0,10),
         deviceType: '', model: '', location: '',
         coolerHP: '', outdoorHP: '', compHP: '',
-        fanMotorType: '', fanMotorWatt: '', fanBladeSize: '',
+        coolerFanType: '', coolerFanWatt: '', coolerFanBlade: '',
+        outdoorFanType: '', outdoorFanWatt: '', outdoorFanBlade: '',
         faultType: '', symptom: '', cause: '', action: '',
         parts: [], partsCustom: '', partPhotos: [],
         refrigerant: '', refAmount: '',
@@ -499,20 +500,36 @@ function LogForm() {
             <span class="lbl" style="margin-bottom:4px">콤프 마력 (HP)</span>
             <input placeholder="예: 4" value="${esc(f.compHP)}" oninput="setField('compHP', this.value)">
           </div>
-          <span class="lbl" style="margin-bottom:6px">🌀 팬모터 구분</span>
+          <span class="lbl" style="margin-bottom:6px">🌀 쿨러 팬모터</span>
           <div style="display:flex;gap:8px;margin-bottom:8px">
-            ${['실외기 팬모터', '일체형 팬모터'].map(t => `
-              <span class="chip ${f.fanMotorType === t ? 'active' : ''}" style="flex:1;text-align:center" onclick="setField('fanMotorType','${f.fanMotorType === t ? '' : t}'); render()">${t}</span>
+            ${['실외기형', '일체형'].map(t => `
+              <span class="chip ${f.coolerFanType === t ? 'active' : ''}" style="flex:1;text-align:center" onclick="setField('coolerFanType','${f.coolerFanType === t ? '' : t}'); render()">${t}</span>
             `).join('')}
           </div>
           <div class="row mb8">
             <div>
               <span class="lbl" style="margin-bottom:4px">와트수 (W)</span>
-              <input placeholder="예: 200" value="${esc(f.fanMotorWatt)}" oninput="setField('fanMotorWatt', this.value)">
+              <input placeholder="예: 200" value="${esc(f.coolerFanWatt)}" oninput="setField('coolerFanWatt', this.value)">
             </div>
             <div>
               <span class="lbl" style="margin-bottom:4px">날개 크기</span>
-              <input placeholder="예: 450mm" value="${esc(f.fanBladeSize)}" oninput="setField('fanBladeSize', this.value)">
+              <input placeholder="예: 450mm" value="${esc(f.coolerFanBlade)}" oninput="setField('coolerFanBlade', this.value)">
+            </div>
+          </div>
+          <span class="lbl" style="margin-bottom:6px">🌀 실외기 팬모터</span>
+          <div style="display:flex;gap:8px;margin-bottom:8px">
+            ${['실외기형', '일체형'].map(t => `
+              <span class="chip ${f.outdoorFanType === t ? 'active' : ''}" style="flex:1;text-align:center" onclick="setField('outdoorFanType','${f.outdoorFanType === t ? '' : t}'); render()">${t}</span>
+            `).join('')}
+          </div>
+          <div class="row mb8">
+            <div>
+              <span class="lbl" style="margin-bottom:4px">와트수 (W)</span>
+              <input placeholder="예: 200" value="${esc(f.outdoorFanWatt)}" oninput="setField('outdoorFanWatt', this.value)">
+            </div>
+            <div>
+              <span class="lbl" style="margin-bottom:4px">날개 크기</span>
+              <input placeholder="예: 450mm" value="${esc(f.outdoorFanBlade)}" oninput="setField('outdoorFanBlade', this.value)">
             </div>
           </div>
         ` : ''}
@@ -758,9 +775,8 @@ function LogList() {
         ['⚡ 쿨러 마력', sel.coolerHP ? sel.coolerHP + ' HP' : ''],
         ['🏭 실외기 마력', sel.outdoorHP ? sel.outdoorHP + ' HP' : ''],
         ['🔩 콤프 마력', sel.compHP || ''],
-        ['🌀 팬모터 구분', sel.fanMotorType || ''],
-        ['💡 팬모터 와트', sel.fanMotorWatt ? sel.fanMotorWatt + ' W' : ''],
-        ['📐 날개 크기', sel.fanBladeSize || ''],
+        ['🌀 쿨러 팬모터', [sel.coolerFanType, sel.coolerFanWatt ? sel.coolerFanWatt+'W' : '', sel.coolerFanBlade].filter(Boolean).join(' / ')],
+        ['🌀 실외기 팬모터', [sel.outdoorFanType, sel.outdoorFanWatt ? sel.outdoorFanWatt+'W' : '', sel.outdoorFanBlade].filter(Boolean).join(' / ')],
       ] : []),
       ['❄️ 냉매', [sel.refrigerant, sel.refAmount ? sel.refAmount + 'kg' : ''].filter(Boolean).join(' ')],
       ['📊 압력', [sel.highPressure ? '고압: ' + sel.highPressure : '', sel.lowPressure ? '저압: ' + sel.lowPressure : ''].filter(Boolean).join(' / ')],
