@@ -697,6 +697,8 @@ function LogList() {
               <span style="color:var(--muted);font-size:10px">${fmt(log.date)}</span>
             </div>
           </div>
+          ${log.model ? `<div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px">📦 ${esc(log.model)}</div>` : ''}
+          ${log.location ? `<div style="font-size:12px;color:var(--muted);margin-bottom:4px">📍 ${esc(log.location)}</div>` : ''}
           ${log.faultType ? `<span class="tag warn" style="margin-bottom:5px;display:inline-flex">${esc(log.faultType)}</span>` : ''}
           <div style="font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(log.symptom)}</div>
           ${log.parts && log.parts.length > 0 ? `<div style="font-size:10px;color:var(--muted);margin-top:4px">🔩 ${esc(log.parts.slice(0,3).join(', '))}${log.parts.length > 3 ? ' ...' : ''}</div>` : ''}
