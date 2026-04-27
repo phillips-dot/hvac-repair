@@ -399,7 +399,7 @@ function LogForm() {
         deviceType: '', model: '', location: '',
         coolerHP: '', outdoorHP: '', compHP: '',
         faultType: '', symptom: '', cause: '', action: '',
-        parts: [], partsCustom: '',
+        parts: [], partsCustom: '', partPhotos: [],
         refrigerant: '', refAmount: '',
         highPressure: '', lowPressure: '',
         workTime: '', cost: '',
@@ -491,7 +491,23 @@ function LogForm() {
             <span class="chip ${f.parts.includes(p) ? 'active' : ''}" onclick="togglePart('${p}')">${p}</span>
           `).join('')}
         </div>
-        <input placeholder="기타 부품 직접 입력 (예: 인버터 모듈)" value="${esc(f.partsCustom)}" oninput="setField('partsCustom', this.value)">
+        <input class="mb10" placeholder="기타 부품 직접 입력 (예: 인버터 모듈)" value="${esc(f.partsCustom)}" oninput="setField('partsCustom', this.value)">
+        <span class="lbl">📷 부품 사진 (${(f.partPhotos||[]).length} / 5장)</span>
+        <div class="photo-grid">
+          ${(f.partPhotos||[]).map((p, i) => `
+            <div class="photo-item">
+              <img src="${p}" onclick="viewPhoto('${p}')">
+              <button class="del-x" onclick="event.stopPropagation();removePartPhoto(${i})">×</button>
+            </div>
+          `).join('')}
+          ${(f.partPhotos||[]).length < 5 ? `
+            <label class="photo-add">
+              <div class="icon">📷</div>
+              <div>부품 사진</div>
+              <input type="file" accept="image/*" multiple style="display:none" onchange="handlePartPhotoUpload(event)">
+            </label>
+          ` : ''}
+        </div>
       </div>
 
       <div class="card">
@@ -596,6 +612,33 @@ function removePhoto(index) {
   render();
 }
 
+async function handlePartPhotoUpload(event) {
+  const files = Array.from(event.target.files);
+  if (!files.length || !formState) return;
+  if (!formState.partPhotos) formState.partPhotos = [];
+  const remaining = 5 - formState.partPhotos.length;
+  if (remaining <= 0) { alert('부품 사진은 최대 5장까지 첨부 가능합니다.'); return; }
+  const toProcess = files.slice(0, remaining);
+  if (files.length > remaining) alert(`최대 5장까지 가능해서 ${remaining}장만 추가됩니다.`);
+  try {
+    const compressed = await Promise.all(
+      toProcess.filter(f => f.type.startsWith('image/')).map(f => resizeImage(f))
+    );
+    formState.partPhotos = [...formState.partPhotos, ...compressed];
+    render();
+  } catch (e) {
+    alert('사진 처리 중 오류가 발생했습니다: ' + e.message);
+  }
+  event.target.value = '';
+}
+
+function removePartPhoto(index) {
+  if (!formState) return;
+  if (!confirm('이 사진을 삭제할까요?')) return;
+  formState.partPhotos = formState.partPhotos.filter((_, i) => i !== index);
+  render();
+}
+
 function viewPhoto(src) {
   const viewer = document.createElement('div');
   viewer.className = 'photo-viewer';
@@ -686,6 +729,18 @@ function LogList() {
             <span class="lbl">📷 첨부 사진 (${sel.photos.length}장)</span>
             <div class="photo-grid">
               ${sel.photos.map(p => `
+                <div class="photo-item">
+                  <img src="${p}" onclick="viewPhoto('${p}')">
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        ` : ''}
+        ${sel.partPhotos && sel.partPhotos.length > 0 ? `
+          <div class="card">
+            <span class="lbl">🔩 부품 교체 사진 (${sel.partPhotos.length}장)</span>
+            <div class="photo-grid">
+              ${sel.partPhotos.map(p => `
                 <div class="photo-item">
                   <img src="${p}" onclick="viewPhoto('${p}')">
                 </div>
