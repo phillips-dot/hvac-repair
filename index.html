@@ -458,7 +458,7 @@ function LogForm() {
       formState = {
         date: new Date().toISOString().slice(0,10),
         deviceType: '', model: '', location: '',
-        coolerHP: '', outdoorHP: '', compHP: '',
+        coolerHP: '', coolerMaker: '', outdoorHP: '', outdoorMaker: '', compHP: '', compMaker: '',
         coolerFanType: '', coolerFanWatt: '', coolerFanBlade: '',
         outdoorFanType: '', outdoorFanWatt: '', outdoorFanBlade: '',
         faultType: '', symptom: '', cause: '', action: '',
@@ -496,13 +496,29 @@ function LogForm() {
               <input placeholder="예: 3" value="${esc(f.coolerHP)}" oninput="setField('coolerHP', this.value)">
             </div>
             <div>
+              <span class="lbl" style="margin-bottom:4px">쿨러 제조사</span>
+              <input placeholder="예: 다이킨" value="${esc(f.coolerMaker)}" oninput="setField('coolerMaker', this.value)">
+            </div>
+          </div>
+          <div class="row mb8">
+            <div>
               <span class="lbl" style="margin-bottom:4px">실외기 마력 (HP)</span>
               <input placeholder="예: 5" value="${esc(f.outdoorHP)}" oninput="setField('outdoorHP', this.value)">
             </div>
+            <div>
+              <span class="lbl" style="margin-bottom:4px">실외기 제조사</span>
+              <input placeholder="예: 삼성" value="${esc(f.outdoorMaker)}" oninput="setField('outdoorMaker', this.value)">
+            </div>
           </div>
-          <div class="mb8">
-            <span class="lbl" style="margin-bottom:4px">콤프 마력 (HP)</span>
-            <input placeholder="예: 4" value="${esc(f.compHP)}" oninput="setField('compHP', this.value)">
+          <div class="row mb8">
+            <div>
+              <span class="lbl" style="margin-bottom:4px">콤프 마력</span>
+              <input placeholder="예: 4" value="${esc(f.compHP)}" oninput="setField('compHP', this.value)">
+            </div>
+            <div>
+              <span class="lbl" style="margin-bottom:4px">콤프 제조사</span>
+              <input placeholder="예: copeland" value="${esc(f.compMaker)}" oninput="setField('compMaker', this.value)">
+            </div>
           </div>
           <span class="lbl" style="margin-bottom:6px">🌀 쿨러 팬모터</span>
           <div style="display:flex;gap:8px;margin-bottom:8px">
@@ -776,9 +792,9 @@ function LogList() {
       ['🛠️ 조치내용', sel.action],
       ['🔩 교체부품', [...(sel.parts || []), sel.partsCustom].filter(Boolean).join(', ')],
       ...(['냉동창고', '기타 냉동공조'].includes(sel.deviceType) ? [
-        ['⚡ 쿨러 마력', sel.coolerHP ? sel.coolerHP + ' HP' : ''],
-        ['🏭 실외기 마력', sel.outdoorHP ? sel.outdoorHP + ' HP' : ''],
-        ['🔩 콤프 마력', sel.compHP || ''],
+        ['⚡ 쿨러', [sel.coolerHP ? sel.coolerHP+'HP' : '', sel.coolerMaker].filter(Boolean).join(' / ')],
+        ['🏭 실외기', [sel.outdoorHP ? sel.outdoorHP+'HP' : '', sel.outdoorMaker].filter(Boolean).join(' / ')],
+        ['🔩 콤프', [sel.compHP, sel.compMaker].filter(Boolean).join(' / ')],
         ['🌀 쿨러 팬모터', [sel.coolerFanType, sel.coolerFanWatt ? sel.coolerFanWatt+'kW' : '', sel.coolerFanBlade].filter(Boolean).join(' / ')],
         ['🌀 실외기 팬모터', [sel.outdoorFanType, sel.outdoorFanWatt ? sel.outdoorFanWatt+'kW' : '', sel.outdoorFanBlade].filter(Boolean).join(' / ')],
       ] : []),
@@ -854,7 +870,7 @@ function LogList() {
           <div class="sb" style="margin-bottom:6px">
             <div style="flex:1;min-width:0">
               ${['냉동창고', '기타 냉동공조'].includes(log.deviceType)
-                ? `<div style="font-size:14px;font-weight:800;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${[log.coolerHP ? '쿨러 '+log.coolerHP+'HP' : '', log.outdoorHP ? '실외기 '+log.outdoorHP+'HP' : '', log.compHP ? '콤프 '+log.compHP : ''].filter(Boolean).join(' / ') || '마력 미입력'}</div>`
+                ? `<div style="font-size:14px;font-weight:800;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${[log.coolerHP ? '쿨러 '+log.coolerHP+'HP'+(log.coolerMaker ? ' ('+log.coolerMaker+')' : '') : '', log.outdoorHP ? '실외기 '+log.outdoorHP+'HP'+(log.outdoorMaker ? ' ('+log.outdoorMaker+')' : '') : '', log.compHP ? '콤프 '+log.compHP+(log.compMaker ? ' ('+log.compMaker+')' : '') : ''].filter(Boolean).join(' / ') || '마력 미입력'}</div>`
                 : log.model ? `<div style="font-size:15px;font-weight:800;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(log.model)}</div>` : `<div style="font-size:15px;font-weight:800;color:var(--muted)">모델명 없음</div>`
               }
               ${log.location ? `<div style="font-size:13px;color:var(--accent);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">📍 ${esc(log.location)}</div>` : ''}
