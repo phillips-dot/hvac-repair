@@ -952,7 +952,10 @@ function LogList() {
         <div class="log-card" onclick="viewLog(${log.id})">
           <div class="sb" style="margin-bottom:6px">
             <div style="flex:1;min-width:0">
-              ${log.model ? `<div style="font-size:15px;font-weight:800;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(log.model)}</div>` : ''}
+              ${['냉동창고', '기타 냉동공조'].includes(log.deviceType)
+                ? `<div style="font-size:14px;font-weight:800;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${[log.coolerHP ? '쿨러 '+log.coolerHP+'HP'+(log.coolerMaker ? ' ('+log.coolerMaker+')' : '') : '', log.outdoorHP ? '실외기 '+log.outdoorHP+'HP'+(log.outdoorMaker ? ' ('+log.outdoorMaker+')' : '') : '', log.compHP ? '콤프 '+log.compHP+([log.compType, log.compMaker].filter(Boolean).length ? ' ('+[log.compType, log.compMaker].filter(Boolean).join('/')+')' : '') : ''].filter(Boolean).join(' / ') || '마력 미입력'}</div>`
+                : log.model ? `<div style="font-size:15px;font-weight:800;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(log.model)}</div>` : `<div style="font-size:15px;font-weight:800;color:var(--muted)">모델명 없음</div>`
+              }
               ${log.shopName ? `<div style="font-size:13px;color:var(--accent);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">🏪 ${esc(log.shopName)}</div>` : ''}
               ${log.location ? `<div style="font-size:12px;color:var(--muted);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">📍 ${esc(log.location)}</div>` : ''}
             </div>
