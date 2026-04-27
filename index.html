@@ -455,6 +455,7 @@ function LogForm() {
         date: new Date().toISOString().slice(0,10),
         deviceType: '', model: '', location: '',
         coolerHP: '', outdoorHP: '', compHP: '',
+        fanMotorType: '', fanMotorWatt: '', fanBladeSize: '',
         faultType: '', symptom: '', cause: '', action: '',
         parts: [], partsCustom: '', partPhotos: [],
         refrigerant: '', refAmount: '',
@@ -497,6 +498,22 @@ function LogForm() {
           <div class="mb8">
             <span class="lbl" style="margin-bottom:4px">콤프 마력 (HP)</span>
             <input placeholder="예: 4" value="${esc(f.compHP)}" oninput="setField('compHP', this.value)">
+          </div>
+          <span class="lbl" style="margin-bottom:6px">🌀 팬모터 구분</span>
+          <div style="display:flex;gap:8px;margin-bottom:8px">
+            ${['실외기 팬모터', '일체형 팬모터'].map(t => `
+              <span class="chip ${f.fanMotorType === t ? 'active' : ''}" style="flex:1;text-align:center" onclick="setField('fanMotorType','${f.fanMotorType === t ? '' : t}'); render()">${t}</span>
+            `).join('')}
+          </div>
+          <div class="row mb8">
+            <div>
+              <span class="lbl" style="margin-bottom:4px">와트수 (W)</span>
+              <input placeholder="예: 200" value="${esc(f.fanMotorWatt)}" oninput="setField('fanMotorWatt', this.value)">
+            </div>
+            <div>
+              <span class="lbl" style="margin-bottom:4px">날개 크기</span>
+              <input placeholder="예: 450mm" value="${esc(f.fanBladeSize)}" oninput="setField('fanBladeSize', this.value)">
+            </div>
           </div>
         ` : ''}
         <input placeholder="설치 위치 / 고객명" value="${esc(f.location)}" oninput="setField('location', this.value)">
@@ -741,6 +758,9 @@ function LogList() {
         ['⚡ 쿨러 마력', sel.coolerHP ? sel.coolerHP + ' HP' : ''],
         ['🏭 실외기 마력', sel.outdoorHP ? sel.outdoorHP + ' HP' : ''],
         ['🔩 콤프 마력', sel.compHP || ''],
+        ['🌀 팬모터 구분', sel.fanMotorType || ''],
+        ['💡 팬모터 와트', sel.fanMotorWatt ? sel.fanMotorWatt + ' W' : ''],
+        ['📐 날개 크기', sel.fanBladeSize || ''],
       ] : []),
       ['❄️ 냉매', [sel.refrigerant, sel.refAmount ? sel.refAmount + 'kg' : ''].filter(Boolean).join(' ')],
       ['📊 압력', [sel.highPressure ? '고압: ' + sel.highPressure : '', sel.lowPressure ? '저압: ' + sel.lowPressure : ''].filter(Boolean).join(' / ')],
