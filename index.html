@@ -362,12 +362,19 @@ const esc = (str) => String(str || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<
 let currentTab = 0;
 let selectedLog = null;
 let formState = null;
+let editingLogId = null;
 let filter = '';
 
 // ── 탭 전환 ───────────────────────────────────────────────
 document.querySelectorAll('.tab').forEach(btn => {
   btn.addEventListener('click', () => {
-    currentTab = parseInt(btn.dataset.tab);
+    const newTab = parseInt(btn.dataset.tab);
+    if (newTab !== 0 && editingLogId !== null) {
+      if (!confirm('수정 중인 내용이 있습니다. 취소하고 이동할까요?')) return;
+      formState = null;
+      editingLogId = null;
+    }
+    currentTab = newTab;
     document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     selectedLog = null;
@@ -378,17 +385,27 @@ document.querySelectorAll('.tab').forEach(btn => {
 // ── 기록 폼 ─────────────────────────────────────────────
 function LogForm() {
   if (!formState) {
-    formState = {
-      date: new Date().toISOString().slice(0,10),
-      deviceType: '', model: '', location: '',
-      faultType: '', symptom: '', cause: '', action: '',
-      parts: [], partsCustom: '',
-      refrigerant: '', refAmount: '',
-      highPressure: '', lowPressure: '',
-      workTime: '', cost: '',
-      specialNote: '', memo: '',
-      photos: []
-    };
+    if (editingLogId !== null) {
+      const log = getLogs().find(l => l.id === editingLogId);
+      if (log) {
+        formState = { ...log };
+      } else {
+        editingLogId = null;
+      }
+    }
+    if (!formState) {
+      formState = {
+        date: new Date().toISOString().slice(0,10),
+        deviceType: '', model: '', location: '',
+        faultType: '', symptom: '', cause: '', action: '',
+        parts: [], partsCustom: '',
+        refrigerant: '', refAmount: '',
+        highPressure: '', lowPressure: '',
+        workTime: '', cost: '',
+        specialNote: '', memo: '',
+        photos: []
+      };
+    }
   }
   const f = formState;
 
@@ -488,7 +505,10 @@ function LogForm() {
         <textarea placeholder="기타 메모" oninput="setField('memo', this.value)">${esc(f.memo)}</textarea>
       </div>
 
-      <button class="btn" id="save-btn" onclick="saveForm()">💾 수리 기록 저장</button>
+      ${editingLogId !== null ? `
+        <button class="btn danger" style="margin-bottom:8px" onclick="cancelEdit()">✕ 수정 취소</button>
+      ` : ''}
+      <button class="btn" id="save-btn" onclick="saveForm()">${editingLogId !== null ? '✏️ 수정 저장' : '💾 수리 기록 저장'}</button>
     </div>
   `;
 }
@@ -569,7 +589,12 @@ function saveForm() {
   }
   const logs = getLogs();
   try {
-    saveLogs([{ ...f, id: Date.now(), createdAt: new Date().toISOString() }, ...logs]);
+    if (editingLogId !== null) {
+      const updated = logs.map(l => l.id === editingLogId ? { ...f, id: editingLogId, updatedAt: new Date().toISOString() } : l);
+      saveLogs(updated);
+    } else {
+      saveLogs([{ ...f, id: Date.now(), createdAt: new Date().toISOString() }, ...logs]);
+    }
   } catch (e) {
     if (e.name === 'QuotaExceededError' || e.code === 22) {
       alert('⚠️ 저장 공간이 부족합니다.\n오래된 기록을 삭제하거나 사진을 줄여주세요.');
@@ -583,8 +608,17 @@ function saveForm() {
   btn.textContent = '✅ 저장 완료!';
   setTimeout(() => {
     formState = null;
+    editingLogId = null;
+    currentTab = 1;
+    document.querySelectorAll('.tab').forEach((b, i) => b.classList.toggle('active', i === 1));
     render();
   }, 1400);
+}
+
+function cancelEdit() {
+  formState = null;
+  editingLogId = null;
+  render();
 }
 
 // ── 목록 ─────────────────────────────────────────────────
@@ -637,7 +671,10 @@ function LogList() {
             <div style="font-size:13px;line-height:1.7">${esc(v)}</div>
           </div>
         `).join('')}
-        <button class="btn danger" onclick="deleteLog(${sel.id}, true)">🗑️ 삭제</button>
+        <div style="display:flex;gap:8px">
+          <button class="btn" onclick="editLog(${sel.id})" style="flex:1">✏️ 수정</button>
+          <button class="btn danger" onclick="deleteLog(${sel.id}, true)" style="flex:1">🗑️ 삭제</button>
+        </div>
       </div>
     `;
   }
@@ -675,6 +712,16 @@ function LogList() {
 
 function setFilter(f) { filter = f; render(); }
 function viewLog(id) { selectedLog = getLogs().find(l => l.id === id); render(); }
+
+function editLog(id) {
+  formState = null;
+  editingLogId = id;
+  selectedLog = null;
+  currentTab = 0;
+  document.querySelectorAll('.tab').forEach((b, i) => b.classList.toggle('active', i === 0));
+  render();
+}
+
 function deleteLog(id, fromDetail) {
   if (!confirm('삭제할까요?')) return;
   const updated = getLogs().filter(l => l.id !== id);
