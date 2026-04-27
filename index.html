@@ -160,14 +160,14 @@ textarea { min-height: 72px; resize: vertical; }
   display: flex; flex-direction: column;
 }
 .chat-messages {
-  flex: 1; min-height: 0; overflow-y: auto; padding: 10px 12px;
-  display: flex; flex-direction: column; gap: 6px;
+  flex: 1; min-height: 0; overflow-y: auto; padding: 8px 10px;
+  display: flex; flex-direction: column; gap: 4px;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
 }
 .msg {
-  max-width: 75%; padding: 8px 12px; border-radius: 12px;
-  font-size: 14px; line-height: 1.6; white-space: pre-wrap; word-break: break-word;
+  max-width: 75%; padding: 5px 9px; border-radius: 10px;
+  font-size: 13px; line-height: 1.45; white-space: pre-wrap; word-break: break-word;
 }
 .msg.user {
   align-self: flex-end;
@@ -187,7 +187,7 @@ textarea { min-height: 72px; resize: vertical; }
   padding: 4px 12px; border-radius: 20px;
 }
 .msg-time {
-  font-size: 10px; color: rgba(0,0,0,0.4); margin-top: 3px;
+  font-size: 9px; color: rgba(0,0,0,0.4); margin-top: 2px;
   text-align: right;
 }
 .msg.ai .msg-time { color: var(--muted); text-align: left; }
