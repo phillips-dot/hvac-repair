@@ -829,6 +829,7 @@ function LogList() {
             ${log.faultType ? `<span class="tag warn">${esc(log.faultType)}</span>` : ''}
           </div>
           <div style="font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(log.symptom)}</div>
+          ${[...(log.parts||[]), log.partsCustom].filter(Boolean).length > 0 ? `<div style="font-size:12px;color:var(--text);margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><span style="color:var(--muted)">교체부품이력:</span> ${esc([...(log.parts||[]), log.partsCustom].filter(Boolean).join(', '))}</div>` : ''}
           <div class="sb" style="justify-content:flex-end;margin-top:10px;gap:6px">
             <button class="btn-sm" onclick="event.stopPropagation();editLog(${log.id})">✏️ 수정</button>
             <button class="btn-sm danger" onclick="event.stopPropagation();deleteLog(${log.id})">🗑️ 삭제</button>
