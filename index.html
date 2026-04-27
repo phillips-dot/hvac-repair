@@ -849,9 +849,9 @@ function LogList() {
             </div>
           ` : ''}
           ${sel.faultType ? `
-            <div style="margin-top:12px;display:flex;align-items:center;gap:8px">
-              <span style="font-size:11px;color:var(--muted);font-weight:700;letter-spacing:0.5px">고장유형</span>
-              <span class="tag warn" style="font-size:12px">${esc(sel.faultType)}</span>
+            <div style="margin-top:12px">
+              <div style="font-size:11px;color:var(--muted);font-weight:700;letter-spacing:0.5px;margin-bottom:5px">고장유형</div>
+              <span class="tag warn" style="font-size:14px;padding:5px 14px;font-weight:800">${esc(sel.faultType)}</span>
             </div>
           ` : ''}
         </div>
