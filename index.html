@@ -458,7 +458,7 @@ function LogForm() {
       formState = {
         date: new Date().toISOString().slice(0,10),
         deviceType: '', model: '', location: '',
-        coolerHP: '', coolerMaker: '', outdoorHP: '', outdoorMaker: '', compHP: '', compType: '',
+        coolerHP: '', coolerMaker: '', outdoorHP: '', outdoorMaker: '', compHP: '', compType: '', compMaker: '',
         coolerFanType: '', coolerFanWatt: '', coolerFanBlade: '',
         outdoorFanType: '', outdoorFanWatt: '', outdoorFanBlade: '',
         faultType: '', symptom: '', cause: '', action: '',
@@ -517,9 +517,20 @@ function LogForm() {
           <span class="lbl" style="margin-bottom:6px">콤프 종류</span>
           <div style="display:flex;gap:8px;margin-bottom:8px">
             ${['왕복동', '스크롤', '로타리'].map(t => `
-              <span class="chip ${f.compType === t ? 'active' : ''}" style="flex:1;text-align:center" onclick="setField('compType','${f.compType === t ? '' : t}'); render()">${t}</span>
+              <span class="chip ${f.compType === t ? 'active' : ''}" style="flex:1;text-align:center" onclick="setField('compType','${f.compType === t ? '' : t}'); setField('compMaker',''); render()">${t}</span>
             `).join('')}
           </div>
+          ${f.compType ? (() => {
+            const makers = { '왕복동': ['브리스톨','코플랜드','데캄시'], '스크롤': ['코플랜드'], '로타리': ['삼성','LG','캐리어'] };
+            return `
+              <span class="lbl" style="margin-bottom:6px">콤프 제조사</span>
+              <div style="display:flex;gap:8px;margin-bottom:8px">
+                ${makers[f.compType].map(m => `
+                  <span class="chip ${f.compMaker === m ? 'active' : ''}" style="flex:1;text-align:center" onclick="setField('compMaker','${f.compMaker === m ? '' : m}'); render()">${m}</span>
+                `).join('')}
+              </div>
+            `;
+          })() : ''}
           <span class="lbl" style="margin-bottom:6px">🌀 쿨러 팬모터</span>
           <div style="display:flex;gap:8px;margin-bottom:8px">
             ${['모터형', '일체형'].map(t => `
@@ -794,7 +805,7 @@ function LogList() {
       ...(['냉동창고', '기타 냉동공조'].includes(sel.deviceType) ? [
         ['⚡ 쿨러', [sel.coolerHP ? sel.coolerHP+'HP' : '', sel.coolerMaker].filter(Boolean).join(' / ')],
         ['🏭 실외기', [sel.outdoorHP ? sel.outdoorHP+'HP' : '', sel.outdoorMaker].filter(Boolean).join(' / ')],
-        ['🔩 콤프', [sel.compHP, sel.compType].filter(Boolean).join(' / ')],
+        ['🔩 콤프', [sel.compHP, sel.compType, sel.compMaker].filter(Boolean).join(' / ')],
         ['🌀 쿨러 팬모터', [sel.coolerFanType, sel.coolerFanWatt ? sel.coolerFanWatt+'kW' : '', sel.coolerFanBlade].filter(Boolean).join(' / ')],
         ['🌀 실외기 팬모터', [sel.outdoorFanType, sel.outdoorFanWatt ? sel.outdoorFanWatt+'kW' : '', sel.outdoorFanBlade].filter(Boolean).join(' / ')],
       ] : []),
@@ -870,7 +881,7 @@ function LogList() {
           <div class="sb" style="margin-bottom:6px">
             <div style="flex:1;min-width:0">
               ${['냉동창고', '기타 냉동공조'].includes(log.deviceType)
-                ? `<div style="font-size:14px;font-weight:800;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${[log.coolerHP ? '쿨러 '+log.coolerHP+'HP'+(log.coolerMaker ? ' ('+log.coolerMaker+')' : '') : '', log.outdoorHP ? '실외기 '+log.outdoorHP+'HP'+(log.outdoorMaker ? ' ('+log.outdoorMaker+')' : '') : '', log.compHP ? '콤프 '+log.compHP+(log.compType ? ' ('+log.compType+')' : '') : ''].filter(Boolean).join(' / ') || '마력 미입력'}</div>`
+                ? `<div style="font-size:14px;font-weight:800;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${[log.coolerHP ? '쿨러 '+log.coolerHP+'HP'+(log.coolerMaker ? ' ('+log.coolerMaker+')' : '') : '', log.outdoorHP ? '실외기 '+log.outdoorHP+'HP'+(log.outdoorMaker ? ' ('+log.outdoorMaker+')' : '') : '', log.compHP ? '콤프 '+log.compHP+([log.compType, log.compMaker].filter(Boolean).length ? ' ('+[log.compType, log.compMaker].filter(Boolean).join('/')+')' : '') : ''].filter(Boolean).join(' / ') || '마력 미입력'}</div>`
                 : log.model ? `<div style="font-size:15px;font-weight:800;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(log.model)}</div>` : `<div style="font-size:15px;font-weight:800;color:var(--muted)">모델명 없음</div>`
               }
               ${log.location ? `<div style="font-size:13px;color:var(--accent);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">📍 ${esc(log.location)}</div>` : ''}
