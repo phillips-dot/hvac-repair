@@ -502,7 +502,7 @@ function LogForm() {
           </div>
           <span class="lbl" style="margin-bottom:6px">🌀 쿨러 팬모터</span>
           <div style="display:flex;gap:8px;margin-bottom:8px">
-            ${['실외기형', '일체형'].map(t => `
+            ${['모터형', '일체형'].map(t => `
               <span class="chip ${f.coolerFanType === t ? 'active' : ''}" style="flex:1;text-align:center" onclick="setField('coolerFanType','${f.coolerFanType === t ? '' : t}'); render()">${t}</span>
             `).join('')}
           </div>
@@ -518,7 +518,7 @@ function LogForm() {
           </div>
           <span class="lbl" style="margin-bottom:6px">🌀 실외기 팬모터</span>
           <div style="display:flex;gap:8px;margin-bottom:8px">
-            ${['실외기형', '일체형'].map(t => `
+            ${['모터형', '일체형'].map(t => `
               <span class="chip ${f.outdoorFanType === t ? 'active' : ''}" style="flex:1;text-align:center" onclick="setField('outdoorFanType','${f.outdoorFanType === t ? '' : t}'); render()">${t}</span>
             `).join('')}
           </div>
