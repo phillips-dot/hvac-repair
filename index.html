@@ -324,9 +324,8 @@ hr { border: none; border-top: 1px solid var(--border); margin: 7px 0; }
 <div class="tabs">
   <button class="tab active" data-tab="0">📝 기록</button>
   <button class="tab" data-tab="1">📋 목록</button>
-  <button class="tab" data-tab="2">💬 AI도우미</button>
-  <button class="tab" data-tab="3">🤖 AI분석</button>
-  <button class="tab" data-tab="4">📊 통계</button>
+  <button class="tab" data-tab="2">💬 AI</button>
+  <button class="tab" data-tab="3">📊 통계</button>
 </div>
 
 <div id="install-banner" class="install-banner">
@@ -1256,6 +1255,7 @@ function AIAssistant() {
     free: '💭 자유 대화',
     diagnose: '🔍 증상 진단',
     guide: '📋 단계별 가이드',
+    analyze: '📊 데이터 분석',
   };
 
   return `
@@ -1263,8 +1263,9 @@ function AIAssistant() {
       ${Object.entries(modeLabels).map(([k, v]) => `
         <div class="chat-mode-chip ${chatState.mode === k ? 'active' : ''}" onclick="setChatMode('${k}')">${v}</div>
       `).join('')}
-      <div class="chat-mode-chip" onclick="clearChat()" style="margin-left:auto">🗑️ 초기화</div>
+      ${chatState.mode !== 'analyze' ? `<div class="chat-mode-chip" onclick="clearChat()" style="margin-left:auto">🗑️ 초기화</div>` : ''}
     </div>
+    ${chatState.mode === 'analyze' ? AIAnalysis() : `
     <div class="chat-container">
       <div class="chat-messages" id="chat-messages">
         ${chatState.messages.length === 0 ? renderChatWelcome() : chatState.messages.map(renderMessage).join('')}
@@ -1291,6 +1292,7 @@ function AIAssistant() {
         </div>
       </div>
     </div>
+    `}
   `;
 }
 
@@ -1404,8 +1406,9 @@ function getChatPlaceholder() {
     free: '무엇이든 물어보세요...',
     diagnose: '증상을 설명해주세요...',
     guide: '어떤 작업 도움이 필요하세요?',
+    analyze: '',
   };
-  return ph[chatState.mode];
+  return ph[chatState.mode] || '';
 }
 
 function initChatUI() {
@@ -1716,7 +1719,7 @@ function editAndGoToForm(msgId) {
 
 // ── 렌더링 ────────────────────────────────────────────────
 function render() {
-  const views = { 0: LogForm, 1: LogList, 2: AIAssistant, 3: AIAnalysis, 4: Stats };
+  const views = { 0: LogForm, 1: LogList, 2: AIAssistant, 3: Stats };
   $('#app').innerHTML = views[currentTab]();
   if (currentTab === 2) initChatUI();
 }
