@@ -347,10 +347,67 @@ const FAULT_TYPES = ["냉매 부족/누설", "압축기 불량", "팬모터 불�
 const REFRIGERANTS = ["R-22", "R-410A", "R-32", "R-404A", "R-134a", "R-407C", "R-507", "R-438", "기타"];
 const COMMON_PARTS = ["압축기", "팬모터", "팽창밸브", "4방밸브", "고압스위치", "저압스위치", "온도센서", "실내기 PCB", "실외기 PCB", "드레인펌프", "필터", "응축기 코일", "증발기 코일"];
 
+// ── IndexedDB ─────────────────────────────────────────────
+const DB_NAME = 'hvac-repair-db';
+const DB_VERSION = 1;
+const DB_STORE = 'data';
+let _db = null;
+let _logsCache = [];
+
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onupgradeneeded = e => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains(DB_STORE)) db.createObjectStore(DB_STORE);
+    };
+    req.onsuccess = e => { _db = e.target.result; resolve(_db); };
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function dbGet(key) {
+  return new Promise((resolve, reject) => {
+    const req = _db.transaction(DB_STORE, 'readonly').objectStore(DB_STORE).get(key);
+    req.onsuccess = () => resolve(req.result ?? null);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function dbSet(key, value) {
+  return new Promise((resolve, reject) => {
+    const req = _db.transaction(DB_STORE, 'readwrite').objectStore(DB_STORE).put(value, key);
+    req.onsuccess = () => resolve();
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function initApp() {
+  await openDB();
+  let logs = await dbGet('logs');
+  if (!logs) {
+    // localStorage에서 마이그레이션
+    try {
+      const old = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      logs = old;
+      if (old.length > 0) {
+        await dbSet('logs', logs);
+        localStorage.removeItem(STORAGE_KEY);
+      }
+    } catch { logs = []; }
+  }
+  _logsCache = logs || [];
+  render();
+  showInstallGuide();
+}
+
 // ── 유틸 ─────────────────────────────────────────────────
 const $ = (sel) => document.querySelector(sel);
-const getLogs = () => { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch { return []; } };
-const saveLogs = (logs) => localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
+const getLogs = () => _logsCache;
+function saveLogs(logs) {
+  _logsCache = logs;
+  dbSet('logs', logs).catch(e => alert('저장 중 오류: ' + e.message));
+}
 const getApiKey = () => localStorage.getItem(API_KEY_STORAGE) || '';
 const setApiKey = (k) => localStorage.setItem(API_KEY_STORAGE, k);
 const fmt = (iso) => {
@@ -650,20 +707,10 @@ function viewPhoto(src) {
 function saveForm() {
   const f = formState;
   const logs = getLogs();
-  try {
-    if (editingLogId !== null) {
-      const updated = logs.map(l => l.id === editingLogId ? { ...f, id: editingLogId, updatedAt: new Date().toISOString() } : l);
-      saveLogs(updated);
-    } else {
-      saveLogs([{ ...f, id: Date.now(), createdAt: new Date().toISOString() }, ...logs]);
-    }
-  } catch (e) {
-    if (e.name === 'QuotaExceededError' || e.code === 22) {
-      alert('⚠️ 저장 공간이 부족합니다.\n오래된 기록을 삭제하거나 사진을 줄여주세요.');
-    } else {
-      alert('저장 중 오류: ' + e.message);
-    }
-    return;
+  if (editingLogId !== null) {
+    saveLogs(logs.map(l => l.id === editingLogId ? { ...f, id: editingLogId, updatedAt: new Date().toISOString() } : l));
+  } else {
+    saveLogs([{ ...f, id: Date.now(), createdAt: new Date().toISOString() }, ...logs]);
   }
   formState = null;
   editingLogId = null;
@@ -941,7 +988,7 @@ function Stats() {
   const totalCost = logs.reduce((a, l) => a + (Number(l.cost) || 0), 0);
   const totalTime = logs.reduce((a, l) => a + (Number(l.workTime) || 0), 0);
   const totalPhotos = logs.reduce((a, l) => a + (l.photos?.length || 0), 0);
-  const storageSize = new Blob([localStorage.getItem(STORAGE_KEY) || '']).size;
+  const storageSize = new Blob([JSON.stringify(_logsCache)]).size;
   const storageMB = (storageSize / 1024 / 1024).toFixed(2);
 
   const countBy = key => logs.reduce((m, l) => { if (l[key]) m[l[key]] = (m[l[key]] || 0) + 1; return m; }, {});
@@ -1540,8 +1587,7 @@ function showInstallGuide() {
   setTimeout(() => { localStorage.setItem('install-guide-shown', '1'); }, 5000);
 }
 
-render();
-showInstallGuide();
+initApp();
 </script>
 </body>
 </html>
