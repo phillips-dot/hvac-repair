@@ -474,7 +474,7 @@ function LogForm() {
             <label class="photo-add">
               <div class="icon">📷</div>
               <div>사진 추가</div>
-              <input type="file" accept="image/*" style="display:none" onchange="handlePhotoUpload(event)">
+              <input type="file" accept="image/*" multiple style="display:none" onchange="handlePhotoUpload(event)">
             </label>
           ` : ''}
         </div>
@@ -571,13 +571,17 @@ function resizeImage(file, maxWidth = 1200, quality = 0.75) {
 }
 
 async function handlePhotoUpload(event) {
-  const file = event.target.files[0];
-  if (!file || !formState) return;
-  if (formState.photos.length >= 10) { alert('사진은 최대 10장까지 첨부 가능합니다.'); return; }
-  if (!file.type.startsWith('image/')) { alert('이미지 파일만 첨부 가능합니다.'); return; }
+  const files = Array.from(event.target.files);
+  if (!files.length || !formState) return;
+  const remaining = 10 - formState.photos.length;
+  if (remaining <= 0) { alert('사진은 최대 10장까지 첨부 가능합니다.'); return; }
+  const toProcess = files.slice(0, remaining);
+  if (files.length > remaining) alert(`최대 10장까지 가능해서 ${remaining}장만 추가됩니다.`);
   try {
-    const compressed = await resizeImage(file);
-    formState.photos = [...formState.photos, compressed];
+    const compressed = await Promise.all(
+      toProcess.filter(f => f.type.startsWith('image/')).map(f => resizeImage(f))
+    );
+    formState.photos = [...formState.photos, ...compressed];
     render();
   } catch (e) {
     alert('사진 처리 중 오류가 발생했습니다: ' + e.message);
