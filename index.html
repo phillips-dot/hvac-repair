@@ -848,7 +848,7 @@ function LogList() {
           ${sel.shopName ? `<div style="font-size:19px;font-weight:800;color:var(--text);margin-bottom:4px">🏪 ${esc(sel.shopName)}</div>` : ''}
           ${sel.model ? `<div style="font-size:14px;color:var(--accent);margin-bottom:6px">📦 ${esc(sel.model)}</div>` : ''}
           ${sel.location ? `
-            <div style="font-size:13px;color:var(--muted);margin-bottom:10px">📍 ${esc(sel.location)}</div>
+            <div style="font-size:13px;color:var(--text);margin-bottom:10px">📍 ${esc(sel.location)}</div>
             <div style="display:flex;gap:8px">
               <a href="https://map.kakao.com/link/search/${encodeURIComponent(sel.location)}" target="_blank" style="text-decoration:none;flex:1">
                 <button class="btn-sm" style="width:100%;justify-content:center;background:rgba(255,193,7,0.15);color:#FEE500;border-color:rgba(255,193,7,0.4)">🗺️ 카카오맵</button>
