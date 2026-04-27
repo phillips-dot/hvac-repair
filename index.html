@@ -166,31 +166,36 @@ textarea { min-height: 72px; resize: vertical; }
   -webkit-overflow-scrolling: touch;
 }
 .msg {
-  max-width: 75%; padding: 5px 9px; border-radius: 10px;
-  font-size: 13px; line-height: 1.45; white-space: pre-wrap; word-break: break-word;
+  display: inline-block;
+  max-width: 72%; padding: 4px 8px; border-radius: 6px;
+  font-size: 13px; line-height: 1.4; white-space: pre-wrap; word-break: break-word;
 }
+.msg-wrap {
+  display: flex; flex-direction: column;
+}
+.msg-wrap.user { align-items: flex-end; }
+.msg-wrap.ai { align-items: flex-start; }
 .msg.user {
-  align-self: flex-end;
   background: #fee500;
-  color: #000;
-  border-bottom-right-radius: 3px;
+  color: #111;
+  border-radius: 8px 8px 2px 8px;
 }
 .msg.ai {
-  align-self: flex-start;
   background: #1e2f3f;
   color: var(--text);
-  border-bottom-left-radius: 3px;
+  border-radius: 8px 8px 8px 2px;
 }
 .msg.system {
+  display: inline-block;
   align-self: center; background: rgba(255,255,255,0.07);
   color: var(--muted); font-size: 11px;
-  padding: 4px 12px; border-radius: 20px;
+  padding: 3px 10px; border-radius: 20px;
 }
 .msg-time {
-  font-size: 9px; color: rgba(0,0,0,0.4); margin-top: 2px;
-  text-align: right;
+  font-size: 9px; color: var(--muted); margin-top: 1px;
 }
-.msg.ai .msg-time { color: var(--muted); text-align: left; }
+.msg-wrap.user .msg-time { text-align: right; }
+.msg-wrap.ai .msg-time { text-align: left; }
 .msg-photo {
   max-width: 200px; border-radius: 8px; margin-top: 6px;
   display: block; cursor: pointer;
@@ -1355,16 +1360,16 @@ function renderMessage(msg) {
   const time = new Date(msg.time).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
   if (msg.type === 'user') {
     return `
-      <div class="msg user">
-        ${esc(msg.text)}
-        ${msg.photos && msg.photos.length ? msg.photos.map(p => `<img src="${p}" class="msg-photo" onclick="viewPhoto('${p}')">`).join('') : ''}
+      <div class="msg-wrap user">
+        <div class="msg user">
+          ${esc(msg.text)}
+          ${msg.photos && msg.photos.length ? msg.photos.map(p => `<img src="${p}" class="msg-photo" onclick="viewPhoto('${p}')">`).join('') : ''}
+        </div>
         <div class="msg-time">${time}</div>
       </div>
     `;
   }
-  // AI 메시지
   let content = esc(msg.text);
-  // 과거 사례 박스 렌더링
   if (msg.cases && msg.cases.length) {
     content += msg.cases.map(c => `
       <div class="msg-cases">
@@ -1373,13 +1378,12 @@ function renderMessage(msg) {
       </div>
     `).join('');
   }
-  // 저장 제안 카드
   if (msg.saveRecord) {
     content += renderSaveRecordCard(msg.saveRecord, msg.id);
   }
   return `
-    <div class="msg ai">
-      ${content}
+    <div class="msg-wrap ai">
+      <div class="msg ai">${content}</div>
       <div class="msg-time">${time}</div>
     </div>
   `;
