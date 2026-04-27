@@ -833,7 +833,7 @@ function LogList() {
         <button class="btn-sm back-btn" onclick="selectedLog=null; render()">← 목록</button>
         <div class="card" style="border-color:rgba(0,212,255,0.25);background:linear-gradient(135deg,#0f1e2e,#0a1520)">
           <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
-            <span class="tag accent" style="font-size:12px">${esc(sel.deviceType)}</span>
+            <span class="tag accent" style="font-size:15px;padding:5px 14px">${esc(sel.deviceType)}</span>
             <span style="color:var(--muted);font-size:12px">${fmt(sel.date)}</span>
           </div>
           ${sel.shopName ? `<div style="font-size:19px;font-weight:800;color:var(--text);margin-bottom:4px">🏪 ${esc(sel.shopName)}</div>` : ''}
@@ -848,7 +848,12 @@ function LogList() {
               </a>
             </div>
           ` : ''}
-          ${sel.faultType ? `<div style="margin-top:10px"><span class="tag warn" style="font-size:12px">${esc(sel.faultType)}</span></div>` : ''}
+          ${sel.faultType ? `
+            <div style="margin-top:12px;display:flex;align-items:center;gap:8px">
+              <span style="font-size:11px;color:var(--muted);font-weight:700;letter-spacing:0.5px">고장유형</span>
+              <span class="tag warn" style="font-size:12px">${esc(sel.faultType)}</span>
+            </div>
+          ` : ''}
         </div>
         ${sel.photos && sel.photos.length > 0 ? `
           <div class="card">
