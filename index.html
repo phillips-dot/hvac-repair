@@ -458,7 +458,7 @@ function LogForm() {
       formState = {
         date: new Date().toISOString().slice(0,10),
         deviceType: '', model: '', location: '',
-        coolerHP: '', coolerMaker: '', outdoorHP: '', outdoorMaker: '', compHP: '', compType: '', compMaker: '',
+        coolerHP: '', coolerMaker: '', outdoorHP: '', outdoorMaker: '', outdoorDriveType: '', compHP: '', compType: '', compMaker: '',
         coolerFanType: '', coolerFanWatt: '', coolerFanBlade: '',
         outdoorFanType: '', outdoorFanWatt: '', outdoorFanBlade: '',
         faultType: '', symptom: '', cause: '', action: '',
@@ -509,6 +509,12 @@ function LogForm() {
               <span class="lbl" style="margin-bottom:4px">실외기 제조사</span>
               <input placeholder="예: 경동" value="${esc(f.outdoorMaker)}" oninput="setField('outdoorMaker', this.value)">
             </div>
+          </div>
+          <span class="lbl" style="margin-bottom:6px">실외기 방식</span>
+          <div style="display:flex;gap:8px;margin-bottom:8px">
+            ${['정속형', '인버터'].map(t => `
+              <span class="chip ${f.outdoorDriveType === t ? 'active' : ''}" style="flex:1;text-align:center" onclick="setField('outdoorDriveType','${f.outdoorDriveType === t ? '' : t}'); render()">${t}</span>
+            `).join('')}
           </div>
           <div class="mb8">
             <span class="lbl" style="margin-bottom:4px">콤프 마력</span>
@@ -804,7 +810,7 @@ function LogList() {
       ['🔩 교체부품', [...(sel.parts || []), sel.partsCustom].filter(Boolean).join(', ')],
       ...(['냉동창고', '기타 냉동공조'].includes(sel.deviceType) ? [
         ['⚡ 쿨러', [sel.coolerHP ? sel.coolerHP+'HP' : '', sel.coolerMaker].filter(Boolean).join(' / ')],
-        ['🏭 실외기', [sel.outdoorHP ? sel.outdoorHP+'HP' : '', sel.outdoorMaker].filter(Boolean).join(' / ')],
+        ['🏭 실외기', [sel.outdoorHP ? sel.outdoorHP+'HP' : '', sel.outdoorMaker, sel.outdoorDriveType].filter(Boolean).join(' / ')],
         ['🔩 콤프', [sel.compHP, sel.compType, sel.compMaker].filter(Boolean).join(' / ')],
         ['🌀 쿨러 팬모터', [sel.coolerFanType, sel.coolerFanWatt ? sel.coolerFanWatt+'kW' : '', sel.coolerFanBlade].filter(Boolean).join(' / ')],
         ['🌀 실외기 팬모터', [sel.outdoorFanType, sel.outdoorFanWatt ? sel.outdoorFanWatt+'kW' : '', sel.outdoorFanBlade].filter(Boolean).join(' / ')],
