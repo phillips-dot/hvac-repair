@@ -462,7 +462,7 @@ function LogForm() {
 
       <div class="card">
         <span class="lbl">📷 사진 첨부 (최대 5장)</span>
-        <div class="photo-count">${f.photos.length} / 5 장</div>
+        <div class="photo-count">${f.photos.length} / 10 장</div>
         <div class="photo-grid">
           ${f.photos.map((p, i) => `
             <div class="photo-item">
@@ -470,11 +470,11 @@ function LogForm() {
               <button class="del-x" onclick="event.stopPropagation();removePhoto(${i})">×</button>
             </div>
           `).join('')}
-          ${f.photos.length < 5 ? `
+          ${f.photos.length < 10 ? `
             <label class="photo-add">
               <div class="icon">📷</div>
               <div>사진 추가</div>
-              <input type="file" accept="image/*" capture="environment" style="display:none" onchange="handlePhotoUpload(event)">
+              <input type="file" accept="image/*" style="display:none" onchange="handlePhotoUpload(event)">
             </label>
           ` : ''}
         </div>
@@ -573,7 +573,7 @@ function resizeImage(file, maxWidth = 1200, quality = 0.75) {
 async function handlePhotoUpload(event) {
   const file = event.target.files[0];
   if (!file || !formState) return;
-  if (formState.photos.length >= 5) { alert('사진은 최대 5장까지 첨부 가능합니다.'); return; }
+  if (formState.photos.length >= 10) { alert('사진은 최대 10장까지 첨부 가능합니다.'); return; }
   if (!file.type.startsWith('image/')) { alert('이미지 파일만 첨부 가능합니다.'); return; }
   try {
     const compressed = await resizeImage(file);
@@ -1032,7 +1032,7 @@ function AIAssistant() {
         <div class="chat-input-row">
           <label class="chat-btn photo" title="사진 첨부">
             📷
-            <input type="file" accept="image/*" capture="environment" style="display:none" onchange="handleChatPhoto(event)">
+            <input type="file" accept="image/*" style="display:none" onchange="handleChatPhoto(event)">
           </label>
           <textarea id="chat-input" class="chat-input" placeholder="${getChatPlaceholder()}" rows="1" onkeydown="handleChatKeydown(event)"></textarea>
           <button class="chat-btn send" id="send-btn" onclick="sendMessage()">▶</button>
