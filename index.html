@@ -1298,7 +1298,7 @@ function AIAssistant() {
             📷
             <input type="file" accept="image/*" style="display:none" onchange="handleChatPhoto(event)">
           </label>
-          <textarea id="chat-input" class="chat-input" placeholder="${getChatPlaceholder()}" rows="1" onkeydown="handleChatKeydown(event)"></textarea>
+          <textarea id="chat-input" class="chat-input" placeholder="${getChatPlaceholder()}" rows="1" onkeydown="handleChatKeydown(event)" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
           <button class="chat-btn send" id="send-btn" onclick="sendMessage()">▶</button>
         </div>
       </div>
