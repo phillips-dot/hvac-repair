@@ -164,6 +164,7 @@ textarea { min-height: 72px; resize: vertical; }
   display: flex; flex-direction: column; gap: 3px;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
 }
 .msg {
   padding: 4px 8px; border-radius: 6px;
@@ -178,6 +179,7 @@ textarea { min-height: 72px; resize: vertical; }
   background: #1e2f3f;
   color: var(--text);
   border-radius: 8px 8px 8px 2px;
+  border: 1px solid var(--accent);
 }
 .msg.ai {
   background: #1e2f3f;
@@ -442,7 +444,8 @@ document.querySelectorAll('.tab').forEach(btn => {
       editingLogId = null;
     }
     currentTab = newTab;
-    document.body.style.overflow = newTab === 2 ? 'hidden' : '';
+    document.body.style.position = newTab === 2 ? 'fixed' : '';
+    document.body.style.width = newTab === 2 ? '100%' : '';
     if (newTab !== 2) resetChatInputPosition();
     document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
