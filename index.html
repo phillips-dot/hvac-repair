@@ -443,8 +443,7 @@ document.querySelectorAll('.tab').forEach(btn => {
       editingLogId = null;
     }
     currentTab = newTab;
-    document.body.style.position = newTab === 2 ? 'fixed' : '';
-    document.body.style.width = newTab === 2 ? '100%' : '';
+    document.body.style.overflow = '';
     if (newTab !== 2) resetChatInputPosition();
     document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
@@ -1424,8 +1423,8 @@ function getChatPlaceholder() {
 function updateChatLayout() {
   if (currentTab !== 2) return;
   const vp = window.visualViewport;
-  if (!vp) return;
-  const keyboardHeight = Math.max(0, window.innerHeight - vp.height - vp.offsetTop);
+  const vpHeight = vp ? vp.height : window.innerHeight;
+  const keyboardHeight = vp ? Math.max(0, window.innerHeight - vp.height - vp.offsetTop) : 0;
   const inputArea = document.querySelector('.chat-input-area');
   if (inputArea) {
     inputArea.style.position = 'fixed';
@@ -1433,6 +1432,12 @@ function updateChatLayout() {
     inputArea.style.left = '0';
     inputArea.style.right = '0';
     inputArea.style.zIndex = '100';
+  }
+  const container = document.querySelector('.chat-container');
+  if (container) {
+    const top = container.getBoundingClientRect().top;
+    container.style.height = (vpHeight - top) + 'px';
+    container.style.overflow = 'hidden';
   }
   const msgs = document.querySelector('#chat-messages');
   const inputH = inputArea ? inputArea.offsetHeight : 60;
@@ -1453,7 +1458,6 @@ function resetChatInputPosition() {
 }
 
 function initChatUI() {
-  document.body.style.overflow = 'hidden';
   setTimeout(() => {
     updateChatLayout();
     const container = $('#chat-messages');
