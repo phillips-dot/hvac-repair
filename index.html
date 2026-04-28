@@ -1433,6 +1433,7 @@ function updateChatLayout() {
   }
   const container = document.querySelector('.chat-container');
   if (container) {
+    window.scrollTo(0, 0);
     const top = container.getBoundingClientRect().top;
     container.style.height = (vpHeight - top) + 'px';
     container.style.overflow = 'hidden';
@@ -1441,7 +1442,7 @@ function updateChatLayout() {
   const inputH = inputArea ? inputArea.offsetHeight : 60;
   if (msgs) {
     msgs.style.paddingBottom = (inputH + 4) + 'px';
-    msgs.scrollTop = msgs.scrollHeight;
+    if (keyboardHeight > 0) msgs.scrollTop = msgs.scrollHeight;
   }
 }
 
@@ -1463,7 +1464,7 @@ function initChatUI() {
     const input = $('#chat-input');
     if (input) {
       input.addEventListener('focus', () => setTimeout(updateChatLayout, 100));
-      input.addEventListener('blur', () => setTimeout(updateChatLayout, 100));
+      input.addEventListener('blur', () => setTimeout(updateChatLayout, 350));
     }
     if (container) {
       container.addEventListener('touchstart', () => {
