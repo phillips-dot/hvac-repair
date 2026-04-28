@@ -227,7 +227,7 @@ textarea { min-height: 72px; resize: vertical; }
   flex-shrink: 0;
 }
 .chat-btn.send { background: var(--accent); color: #000; }
-.chat-btn.photo { background: var(--subtle); color: var(--accent); }
+.chat-btn.photo { background: var(--border); color: var(--accent); }
 .chat-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .chat-typing {
   align-self: flex-start; padding: 12px 14px;
@@ -1430,6 +1430,7 @@ function updateChatLayout() {
     inputArea.style.left = '0';
     inputArea.style.right = '0';
     inputArea.style.zIndex = '100';
+    inputArea.style.paddingBottom = keyboardHeight > 0 ? '6px' : '';
   }
   const container = document.querySelector('.chat-container');
   if (container) {
