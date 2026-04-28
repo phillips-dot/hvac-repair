@@ -1362,10 +1362,7 @@ function renderMessage(msg) {
   if (msg.type === 'user') {
     return `
       <div class="msg-wrap user">
-        <div class="msg user">
-          ${esc(msg.text)}
-          ${msg.photos && msg.photos.length ? msg.photos.map(p => `<img src="${p}" class="msg-photo" onclick="viewPhoto('${p}')">`).join('') : ''}
-        </div>
+        <div class="msg user">${esc(msg.text)}${msg.photos && msg.photos.length ? msg.photos.map(p => `<img src="${p}" class="msg-photo" onclick="viewPhoto('${p}')">`).join('') : ''}</div>
         <div class="msg-time">${time}</div>
       </div>
     `;
