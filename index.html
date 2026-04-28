@@ -1465,6 +1465,12 @@ function initChatUI() {
       input.addEventListener('focus', () => setTimeout(updateChatLayout, 100));
       input.addEventListener('blur', () => setTimeout(updateChatLayout, 100));
     }
+    if (container) {
+      container.addEventListener('touchstart', () => {
+        const input = $('#chat-input');
+        if (input) input.blur();
+      }, { passive: true });
+    }
   }, 50);
 }
 
