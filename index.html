@@ -1418,6 +1418,8 @@ function getChatPlaceholder() {
   return ph[chatState.mode] || '';
 }
 
+let chatContainerTop = 0;
+
 function updateChatLayout() {
   if (currentTab !== 2) return;
   const vp = window.visualViewport;
@@ -1433,10 +1435,8 @@ function updateChatLayout() {
     inputArea.style.paddingBottom = keyboardHeight > 0 ? '6px' : '';
   }
   const container = document.querySelector('.chat-container');
-  if (container) {
-    window.scrollTo(0, 0);
-    const top = container.getBoundingClientRect().top;
-    container.style.height = (vpHeight - top) + 'px';
+  if (container && chatContainerTop > 0) {
+    container.style.height = (vpHeight - chatContainerTop) + 'px';
     container.style.overflow = 'hidden';
   }
   const msgs = document.querySelector('#chat-messages');
@@ -1459,16 +1459,18 @@ function resetChatInputPosition() {
 
 function initChatUI() {
   setTimeout(() => {
+    const container = document.querySelector('.chat-container');
+    if (container) chatContainerTop = container.getBoundingClientRect().top;
     updateChatLayout();
-    const container = $('#chat-messages');
-    if (container) container.scrollTop = container.scrollHeight;
+    const msgs = $('#chat-messages');
+    if (msgs) msgs.scrollTop = msgs.scrollHeight;
     const input = $('#chat-input');
     if (input) {
-      input.addEventListener('focus', () => setTimeout(updateChatLayout, 100));
+      input.addEventListener('focus', () => setTimeout(updateChatLayout, 150));
       input.addEventListener('blur', () => setTimeout(updateChatLayout, 350));
     }
-    if (container) {
-      container.addEventListener('touchstart', () => {
+    if (msgs) {
+      msgs.addEventListener('touchstart', () => {
         const input = $('#chat-input');
         if (input) input.blur();
       }, { passive: true });
