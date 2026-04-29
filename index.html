@@ -352,6 +352,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 7px 0; }
   <button class="tab" data-tab="1">📋 목록</button>
   <button class="tab" data-tab="2">💬 AI</button>
   <button class="tab" data-tab="3">📊 통계</button>
+  <button class="tab" data-tab="4">🏪 거래처</button>
 </div>
 
 <div id="install-banner" class="install-banner">
@@ -1286,6 +1287,57 @@ function saveChatHistory() {
   }
 }
 
+// ── 거래처 ───────────────────────────────────────────────
+function Clients() {
+  const logs = getLogs().filter(l => l.shopName);
+  if (logs.length === 0) {
+    return `<div class="sec"><div class="empty">상호명이 입력된 기록이 없습니다.<br><span style="font-size:12px">기록 탭에서 상호명을 입력하면 자동으로 등록됩니다.</span></div></div>`;
+  }
+
+  const map = {};
+  logs.forEach(l => {
+    if (!map[l.shopName]) map[l.shopName] = { shopName: l.shopName, phone: '', location: '', visits: 0, lastDate: '' };
+    const c = map[l.shopName];
+    c.visits++;
+    if (l.date >= c.lastDate) {
+      c.lastDate = l.date;
+      if (l.phone) c.phone = l.phone;
+      if (l.location) c.location = l.location;
+    }
+  });
+
+  const clients = Object.values(map).sort((a, b) => b.lastDate.localeCompare(a.lastDate));
+
+  return `
+    <div class="sec">
+      <div style="color:var(--muted);font-size:11px;margin-bottom:10px">총 ${clients.length}개 거래처</div>
+      ${clients.map(c => `
+        <div class="card">
+          <div style="font-size:16px;font-weight:800;color:var(--text);margin-bottom:6px">🏪 ${esc(c.shopName)}</div>
+          ${c.phone ? `
+            <div style="font-size:13px;margin-bottom:4px">
+              📞 <a href="tel:${esc(c.phone)}" style="color:var(--accent);text-decoration:none;font-weight:700">${esc(c.phone)}</a>
+            </div>` : ''}
+          ${c.location ? `
+            <div style="font-size:12px;color:var(--muted);margin-bottom:8px">📍 ${esc(c.location)}</div>
+            <div style="display:flex;gap:8px;margin-bottom:8px">
+              <a href="https://map.kakao.com/link/search/${encodeURIComponent(c.location)}" target="_blank" style="text-decoration:none;flex:1">
+                <button class="btn-sm" style="width:100%;text-align:center;background:rgba(255,193,7,0.15);color:#FEE500;border-color:rgba(255,193,7,0.4)">🗺️ 카카오맵</button>
+              </a>
+              <a href="tmap://search?name=${encodeURIComponent(c.location)}" style="text-decoration:none;flex:1">
+                <button class="btn-sm" style="width:100%;text-align:center;background:rgba(0,122,255,0.15);color:#4A9EFF;border-color:rgba(0,122,255,0.4)">🧭 T맵</button>
+              </a>
+            </div>` : ''}
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:11px;color:var(--muted)">최근 방문 ${fmt(c.lastDate)}</span>
+            <span style="background:rgba(0,212,255,0.12);color:var(--accent);border:1px solid rgba(0,212,255,0.25);border-radius:20px;padding:2px 10px;font-size:11px;font-weight:700">수리 ${c.visits}회</span>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
 function AIAssistant() {
   loadChatHistory();
   const apiKey = getApiKey();
@@ -1854,7 +1906,7 @@ function editAndGoToForm(msgId) {
 
 // ── 렌더링 ────────────────────────────────────────────────
 function render() {
-  const views = { 0: LogForm, 1: LogList, 2: AIAssistant, 3: Stats };
+  const views = { 0: LogForm, 1: LogList, 2: AIAssistant, 3: Stats, 4: Clients };
   $('#app').innerHTML = views[currentTab]();
   if (currentTab === 2) initChatUI();
 }
