@@ -37,7 +37,9 @@ body {
 #app {
   flex: 1; min-height: 0;
   overflow-y: auto; overflow-x: hidden;
-  display: flex; flex-direction: column;
+}
+#app.ai-mode {
+  overflow: hidden; display: flex; flex-direction: column;
 }
 .header {
   background: linear-gradient(160deg, #050a14, #0a1a2e);
@@ -269,11 +271,11 @@ textarea { min-height: 72px; resize: vertical; }
 }
 .quick-q-btn:hover { border-color: var(--accent); }
 .chat-toolbar {
-  flex-shrink: 0;
   display: flex; gap: 6px; padding: 5px 8px;
   overflow-x: auto; background: var(--card);
   border-bottom: 1px solid var(--border);
 }
+.ai-mode .chat-toolbar { flex-shrink: 0; }
 .chat-toolbar::-webkit-scrollbar { display: none; }
 .chat-mode-chip {
   white-space: nowrap; padding: 5px 12px; border-radius: 20px;
@@ -458,7 +460,7 @@ document.querySelectorAll('.tab').forEach(btn => {
     }
     currentTab = newTab;
     const appEl = document.getElementById('app');
-    if (appEl) { appEl.style.overflow = ''; appEl.style.height = ''; }
+    if (appEl) { appEl.style.height = ''; appEl.classList.remove('ai-mode'); }
     document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     selectedLog = null;
@@ -1452,12 +1454,15 @@ function updateChatLayout() {
 
 function resetChatInputPosition() {
   const app = document.getElementById('app');
-  if (app) { app.style.overflow = ''; app.style.height = ''; }
+  if (app) { app.style.height = ''; app.classList.remove('ai-mode'); }
 }
 
 function initChatUI() {
   const app = document.getElementById('app');
-  if (app) app.style.overflow = chatState.mode === 'analyze' ? '' : 'hidden';
+  if (app) {
+    app.style.overflow = '';
+    app.classList.toggle('ai-mode', chatState.mode !== 'analyze');
+  }
   setTimeout(() => {
     const msgs = $('#chat-messages');
     if (msgs) msgs.scrollTop = msgs.scrollHeight;
