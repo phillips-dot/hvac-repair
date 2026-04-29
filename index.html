@@ -1499,6 +1499,22 @@ if (window.visualViewport) {
   });
 }
 
+// 목록 상세뷰 스와이프 뒤로가기 (왼쪽 엣지 → 오른쪽)
+let _swipeStartX = 0, _swipeStartY = 0;
+document.addEventListener('touchstart', e => {
+  _swipeStartX = e.touches[0].clientX;
+  _swipeStartY = e.touches[0].clientY;
+}, { passive: true });
+document.addEventListener('touchend', e => {
+  if (currentTab !== 1 || !selectedLog) return;
+  const dx = e.changedTouches[0].clientX - _swipeStartX;
+  const dy = e.changedTouches[0].clientY - _swipeStartY;
+  if (_swipeStartX < 35 && dx > 80 && Math.abs(dy) < 80) {
+    selectedLog = null;
+    render();
+  }
+}, { passive: true });
+
 function setChatMode(mode) {
   chatState.mode = mode;
   render();
