@@ -446,6 +446,7 @@ let selectedLog = null;
 let formState = null;
 let editingLogId = null;
 let filter = '';
+let listSort = 'desc';
 
 // ── 탭 전환 ───────────────────────────────────────────────
 document.querySelectorAll('.tab').forEach(btn => {
@@ -848,7 +849,8 @@ function cancelEdit() {
 // ── 목록 ─────────────────────────────────────────────────
 function LogList() {
   const logs = getLogs();
-  const filtered = filter ? logs.filter(l => l.deviceType === filter) : logs;
+  const filtered = (filter ? logs.filter(l => l.deviceType === filter) : logs)
+    .slice().sort((a, b) => listSort === 'desc' ? (b.date > a.date ? 1 : -1) : (a.date > b.date ? 1 : -1));
 
   if (selectedLog) {
     const sel = selectedLog;
@@ -988,7 +990,12 @@ function LogList() {
           <span class="chip nowrap ${filter === d ? 'active' : ''}" onclick="setFilter('${d}')">${d || '전체'}</span>
         `).join('')}
       </div>
-      <div style="color:var(--muted);font-size:11px;margin-bottom:10px">총 ${filtered.length}건</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <span style="color:var(--muted);font-size:11px">총 ${filtered.length}건</span>
+        <button onclick="listSort = listSort==='desc'?'asc':'desc'; render()" style="background:var(--subtle);border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:11px;color:var(--accent);font-weight:700;cursor:pointer;font-family:inherit">
+          ${listSort === 'desc' ? '최신순 ↓' : '과거순 ↑'}
+        </button>
+      </div>
       ${filtered.length === 0 ? '<div class="empty">기록이 없습니다.</div>' : ''}
       ${filtered.map(log => `
         <div class="log-card" onclick="viewLog(${log.id})">
