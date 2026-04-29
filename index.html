@@ -480,7 +480,7 @@ function LogForm() {
     if (!formState) {
       formState = {
         date: new Date().toISOString().slice(0,10),
-        deviceType: '', model: '', shopName: '', location: '',
+        deviceType: '', model: '', shopName: '', phone: '', location: '',
         coolerHP: '', coolerMaker: '', outdoorHP: '', outdoorMaker: '', outdoorDriveType: '', compHP: '', compType: '', compMaker: '',
         electricType: '', controlBoxMaker: '', controlBoxMakerCustom: '',
         coolerFanType: '', coolerFanWatt: '', coolerFanBlade: '',
@@ -499,6 +499,15 @@ function LogForm() {
 
   return `
     <div class="sec">
+      <div class="card">
+        <span class="lbl">🏪 업체 정보</span>
+        <div class="row mb8">
+          <input placeholder="상호명 (예: 홍길동 마트)" value="${esc(f.shopName)}" oninput="setField('shopName', this.value)">
+          <input placeholder="010-0000-0000" value="${esc(f.phone)}" oninput="setField('phone', formatPhone(this.value)); this.value=formState.phone" inputmode="numeric">
+        </div>
+        <input placeholder="주소 (예: 서울시 강남구...)" value="${esc(f.location)}" oninput="setField('location', this.value)">
+      </div>
+
       <div class="card">
         <span class="lbl">📅 수리 날짜</span>
         <input type="date" value="${esc(f.date)}" onchange="setField('date', this.value)">
@@ -604,8 +613,6 @@ function LogForm() {
             </div>
           </div>
         ` : ''}
-        <input class="mb8" placeholder="상호명 (예: 홍길동 마트)" value="${esc(f.shopName)}" oninput="setField('shopName', this.value)">
-        <input placeholder="주소 (예: 서울시 강남구...)" value="${esc(f.location)}" oninput="setField('location', this.value)">
       </div>
 
       <div class="card">
@@ -714,6 +721,13 @@ function LogForm() {
 function setField(key, value) {
   if (!formState) return;
   formState[key] = value;
+}
+
+function formatPhone(val) {
+  const n = val.replace(/\D/g, '').slice(0, 11);
+  if (n.length <= 3) return n;
+  if (n.length <= 7) return n.slice(0,3) + '-' + n.slice(3);
+  return n.slice(0,3) + '-' + n.slice(3,7) + '-' + n.slice(7);
 }
 
 function togglePart(part) {
@@ -859,7 +873,8 @@ function LogList() {
             <span class="tag accent" style="font-size:17px;padding:7px 16px">${esc(sel.deviceType)}</span>
             <span style="color:var(--muted);font-size:12px">${fmt(sel.date)}</span>
           </div>
-          ${sel.shopName ? `<div style="font-size:19px;font-weight:800;color:var(--text);margin-bottom:4px">🏪 ${esc(sel.shopName)}</div>` : ''}
+          ${sel.shopName ? `<div style="font-size:19px;font-weight:800;color:var(--text);margin-bottom:2px">🏪 ${esc(sel.shopName)}</div>` : ''}
+          ${sel.phone ? `<div style="font-size:13px;color:var(--accent);margin-bottom:4px">📞 <a href="tel:${esc(sel.phone)}" style="color:var(--accent);text-decoration:none">${esc(sel.phone)}</a></div>` : ''}
           ${sel.location ? `
             <div style="font-size:13px;color:var(--text);margin-bottom:10px">📍 ${esc(sel.location)}</div>
             <div style="display:flex;gap:8px">
