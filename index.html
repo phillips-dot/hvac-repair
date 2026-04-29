@@ -856,6 +856,56 @@ function LogList() {
   const filtered = (filter ? logs.filter(l => l.deviceType === filter) : logs)
     .slice().sort((a, b) => listSort === 'desc' ? (b.date > a.date ? 1 : -1) : (a.date > b.date ? 1 : -1));
 
+  const listHTML = `
+    <div class="sec">
+      <div class="filter-row">
+        ${['', ...DEVICE_TYPES].map(d => `
+          <span class="chip nowrap ${filter === d ? 'active' : ''}" onclick="setFilter('${d}')">${d || '전체'}</span>
+        `).join('')}
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <span style="color:var(--muted);font-size:11px">총 ${filtered.length}건</span>
+        <button onclick="listSort = listSort==='desc'?'asc':'desc'; render()" style="background:var(--subtle);border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:11px;color:var(--accent);font-weight:700;cursor:pointer;font-family:inherit">
+          ${listSort === 'desc' ? '최신순 ↓' : '과거순 ↑'}
+        </button>
+      </div>
+      ${filtered.length === 0 ? '<div class="empty">기록이 없습니다.</div>' : ''}
+      ${filtered.map(log => `
+        <div class="log-card" onclick="viewLog(${log.id})">
+          <div class="sb" style="margin-bottom:6px">
+            <div style="flex:1;min-width:0">
+              ${['냉동창고', '기타 냉동공조'].includes(log.deviceType)
+                ? `<div style="font-size:14px;font-weight:800;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${[log.coolerHP ? '쿨러 '+log.coolerHP+'HP'+(log.coolerMaker ? ' ('+log.coolerMaker+')' : '') : '', log.outdoorHP ? '실외기 '+log.outdoorHP+'HP'+(log.outdoorMaker ? ' ('+log.outdoorMaker+')' : '') : '', log.compHP ? '콤프 '+log.compHP+([log.compType, log.compMaker].filter(Boolean).length ? ' ('+[log.compType, log.compMaker].filter(Boolean).join('/')+')' : '') : ''].filter(Boolean).join(' / ') || '마력 미입력'}</div>`
+                : log.model ? `<div style="font-size:15px;font-weight:800;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(log.model)}</div>` : `<div style="font-size:15px;font-weight:800;color:var(--muted)">모델명 없음</div>`
+              }
+              ${log.shopName ? `<div style="font-size:13px;color:var(--accent);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">🏪 ${esc(log.shopName)}</div>` : ''}
+              ${log.location ? `<div style="font-size:12px;color:var(--muted);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">📍 ${esc(log.location)}</div>` : ''}
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0;margin-left:8px">
+              <span style="color:var(--muted);font-size:11px">${fmt(log.date)}</span>
+              ${log.photos && log.photos.length > 0 ? `<span style="color:var(--accent);font-size:10px">📷 ${log.photos.length}</span>` : ''}
+            </div>
+          </div>
+          <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px">
+            <span class="tag accent">${esc(log.deviceType)}</span>
+            ${log.faultType ? `<span class="tag warn">${esc(log.faultType)}</span>` : ''}
+          </div>
+          <div style="font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(log.symptom)}</div>
+          ${[...(log.parts||[]), log.partsCustom].filter(Boolean).length > 0 ? `
+            <div style="margin-top:7px;padding:6px 9px;background:rgba(0,212,255,0.07);border-left:3px solid var(--accent);border-radius:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+              <span style="font-size:10px;color:var(--accent);font-weight:700;letter-spacing:0.5px">교체부품</span>
+              <span style="font-size:13px;color:var(--text);margin-left:6px">${esc([...(log.parts||[]), log.partsCustom].filter(Boolean).join(', '))}</span>
+            </div>
+          ` : ''}
+          <div class="sb" style="justify-content:flex-end;margin-top:10px;gap:6px">
+            <button class="btn-sm" onclick="event.stopPropagation();editLog(${log.id})">✏️ 수정</button>
+            <button class="btn-sm danger" onclick="event.stopPropagation();deleteLog(${log.id})">🗑️ 삭제</button>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+
   if (selectedLog) {
     const sel = selectedLog;
     const fields = [
@@ -990,55 +1040,6 @@ function LogList() {
     `;
   }
 
-  const listHTML = `
-    <div class="sec">
-      <div class="filter-row">
-        ${['', ...DEVICE_TYPES].map(d => `
-          <span class="chip nowrap ${filter === d ? 'active' : ''}" onclick="setFilter('${d}')">${d || '전체'}</span>
-        `).join('')}
-      </div>
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-        <span style="color:var(--muted);font-size:11px">총 ${filtered.length}건</span>
-        <button onclick="listSort = listSort==='desc'?'asc':'desc'; render()" style="background:var(--subtle);border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:11px;color:var(--accent);font-weight:700;cursor:pointer;font-family:inherit">
-          ${listSort === 'desc' ? '최신순 ↓' : '과거순 ↑'}
-        </button>
-      </div>
-      ${filtered.length === 0 ? '<div class="empty">기록이 없습니다.</div>' : ''}
-      ${filtered.map(log => `
-        <div class="log-card" onclick="viewLog(${log.id})">
-          <div class="sb" style="margin-bottom:6px">
-            <div style="flex:1;min-width:0">
-              ${['냉동창고', '기타 냉동공조'].includes(log.deviceType)
-                ? `<div style="font-size:14px;font-weight:800;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${[log.coolerHP ? '쿨러 '+log.coolerHP+'HP'+(log.coolerMaker ? ' ('+log.coolerMaker+')' : '') : '', log.outdoorHP ? '실외기 '+log.outdoorHP+'HP'+(log.outdoorMaker ? ' ('+log.outdoorMaker+')' : '') : '', log.compHP ? '콤프 '+log.compHP+([log.compType, log.compMaker].filter(Boolean).length ? ' ('+[log.compType, log.compMaker].filter(Boolean).join('/')+')' : '') : ''].filter(Boolean).join(' / ') || '마력 미입력'}</div>`
-                : log.model ? `<div style="font-size:15px;font-weight:800;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(log.model)}</div>` : `<div style="font-size:15px;font-weight:800;color:var(--muted)">모델명 없음</div>`
-              }
-              ${log.shopName ? `<div style="font-size:13px;color:var(--accent);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">🏪 ${esc(log.shopName)}</div>` : ''}
-              ${log.location ? `<div style="font-size:12px;color:var(--muted);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">📍 ${esc(log.location)}</div>` : ''}
-            </div>
-            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0;margin-left:8px">
-              <span style="color:var(--muted);font-size:11px">${fmt(log.date)}</span>
-              ${log.photos && log.photos.length > 0 ? `<span style="color:var(--accent);font-size:10px">📷 ${log.photos.length}</span>` : ''}
-            </div>
-          </div>
-          <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px">
-            <span class="tag accent">${esc(log.deviceType)}</span>
-            ${log.faultType ? `<span class="tag warn">${esc(log.faultType)}</span>` : ''}
-          </div>
-          <div style="font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(log.symptom)}</div>
-          ${[...(log.parts||[]), log.partsCustom].filter(Boolean).length > 0 ? `
-            <div style="margin-top:7px;padding:6px 9px;background:rgba(0,212,255,0.07);border-left:3px solid var(--accent);border-radius:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-              <span style="font-size:10px;color:var(--accent);font-weight:700;letter-spacing:0.5px">교체부품</span>
-              <span style="font-size:13px;color:var(--text);margin-left:6px">${esc([...(log.parts||[]), log.partsCustom].filter(Boolean).join(', '))}</span>
-            </div>
-          ` : ''}
-          <div class="sb" style="justify-content:flex-end;margin-top:10px;gap:6px">
-            <button class="btn-sm" onclick="event.stopPropagation();editLog(${log.id})">✏️ 수정</button>
-            <button class="btn-sm danger" onclick="event.stopPropagation();deleteLog(${log.id})">🗑️ 삭제</button>
-          </div>
-        </div>
-      `).join('')}
-    </div>
-  `;
   return listHTML;
 }
 
