@@ -1420,10 +1420,10 @@ function getChatPlaceholder() {
 
 function updateChatLayout() {
   if (currentTab !== 2) return;
+  window.scrollTo(0, 0);
   const vp = window.visualViewport;
   const vpHeight = vp ? vp.height : window.innerHeight;
   const keyboardHeight = vp ? Math.max(0, window.innerHeight - vp.height - vp.offsetTop) : 0;
-  if (keyboardHeight > 0) window.scrollTo(0, 0);
   const inputArea = document.querySelector('.chat-input-area');
   if (inputArea) {
     inputArea.style.position = 'fixed';
@@ -1458,6 +1458,7 @@ function resetChatInputPosition() {
 }
 
 function initChatUI() {
+  document.body.style.overflow = 'hidden';
   setTimeout(() => {
     updateChatLayout();
     const msgs = $('#chat-messages');
