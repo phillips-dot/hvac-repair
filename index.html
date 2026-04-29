@@ -500,17 +500,17 @@ function LogForm() {
   return `
     <div class="sec">
       <div class="card">
+        <span class="lbl">📅 수리 날짜</span>
+        <input type="date" value="${esc(f.date)}" onchange="setField('date', this.value)">
+      </div>
+
+      <div class="card">
         <span class="lbl">🏪 업체 정보</span>
         <div class="row mb8">
           <input placeholder="상호명 (예: 홍길동 마트)" value="${esc(f.shopName)}" oninput="setField('shopName', this.value)">
           <input placeholder="010-0000-0000" value="${esc(f.phone)}" oninput="setField('phone', formatPhone(this.value)); this.value=formState.phone" inputmode="numeric">
         </div>
         <input placeholder="주소 (예: 서울시 강남구...)" value="${esc(f.location)}" oninput="setField('location', this.value)">
-      </div>
-
-      <div class="card">
-        <span class="lbl">📅 수리 날짜</span>
-        <input type="date" value="${esc(f.date)}" onchange="setField('date', this.value)">
       </div>
 
       <div class="card">
