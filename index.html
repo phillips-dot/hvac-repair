@@ -1506,20 +1506,36 @@ if (window.visualViewport) {
   });
 }
 
-// 목록 상세뷰 스와이프 뒤로가기 (왼쪽 엣지 → 오른쪽)
-let _swipeStartX = 0, _swipeStartY = 0;
+// 목록 상세뷰 스와이프 뒤로가기 (왼쪽 엣지 → 오른쪽, 애니메이션)
+let _swipeStartX = 0, _swipeStartY = 0, _swipeEl = null;
 document.addEventListener('touchstart', e => {
   _swipeStartX = e.touches[0].clientX;
   _swipeStartY = e.touches[0].clientY;
+  if (currentTab === 1 && selectedLog && _swipeStartX < 35) {
+    _swipeEl = document.querySelector('#app .sec');
+    if (_swipeEl) _swipeEl.style.transition = 'none';
+  } else {
+    _swipeEl = null;
+  }
+}, { passive: true });
+document.addEventListener('touchmove', e => {
+  if (!_swipeEl) return;
+  const dx = e.touches[0].clientX - _swipeStartX;
+  if (dx > 0) _swipeEl.style.transform = `translateX(${dx}px)`;
 }, { passive: true });
 document.addEventListener('touchend', e => {
-  if (currentTab !== 1 || !selectedLog) return;
+  if (!_swipeEl) return;
   const dx = e.changedTouches[0].clientX - _swipeStartX;
   const dy = e.changedTouches[0].clientY - _swipeStartY;
-  if (_swipeStartX < 35 && dx > 80 && Math.abs(dy) < 80) {
-    selectedLog = null;
-    render();
+  if (dx > 80 && Math.abs(dy) < 80) {
+    _swipeEl.style.transition = 'transform 0.2s ease-out';
+    _swipeEl.style.transform = 'translateX(100%)';
+    setTimeout(() => { selectedLog = null; render(); }, 200);
+  } else {
+    _swipeEl.style.transition = 'transform 0.25s ease-out';
+    _swipeEl.style.transform = 'translateX(0)';
   }
+  _swipeEl = null;
 }, { passive: true });
 
 function setChatMode(mode) {
