@@ -34,11 +34,10 @@ body {
 }
 #app {
   flex: 1; min-height: 0;
-  overflow-y: auto; overflow-x: hidden;
+  overflow: hidden;
+  position: relative;
 }
-#app.ai-mode {
-  overflow: hidden; display: flex; flex-direction: column;
-}
+#app.ai-mode { display: flex; flex-direction: column; }
 .header {
   background: linear-gradient(160deg, #050a14, #0a1a2e);
   border-bottom: 1px solid var(--border);
@@ -55,7 +54,7 @@ body {
   cursor: pointer; font-family: inherit;
 }
 .tab.active { color: var(--accent); font-weight: 800; border-bottom-color: var(--accent); }
-.sec { padding: 14px 14px calc(20px + env(safe-area-inset-bottom)); }
+.sec { padding: 14px 14px calc(20px + env(safe-area-inset-bottom)); overflow-y: auto; height: 100%; box-sizing: border-box; }
 .card {
   background: var(--card); border: 1px solid var(--border);
   border-radius: 12px; padding: 14px; margin-bottom: 10px;
@@ -334,6 +333,11 @@ textarea { min-height: 72px; resize: vertical; }
 }
 .back-btn { margin-bottom: 14px; }
 hr { border: none; border-top: 1px solid var(--border); margin: 7px 0; }
+.nav-layer { position: absolute; inset: 0; }
+#detail-fg { background: var(--bg); box-shadow: -4px 0 24px rgba(0,0,0,0.45); animation: _detailIn 0.32s cubic-bezier(0.25,0.46,0.45,0.94); }
+#list-bg { animation: _listIn 0.32s cubic-bezier(0.25,0.46,0.45,0.94) forwards; }
+@keyframes _detailIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+@keyframes _listIn { from { transform: translateX(0); } to { transform: translateX(-30%); } }
 </style>
 </head>
 <body>
@@ -868,6 +872,8 @@ function LogList() {
     ].filter(([, v]) => v);
 
     return `
+      <div id="list-bg" class="nav-layer">${listHTML}</div>
+      <div id="detail-fg" class="nav-layer">
       <div class="sec">
         <button class="btn-sm back-btn" onclick="selectedLog=null; render()">← 목록</button>
         <div class="card" style="border-color:rgba(0,212,255,0.25);background:linear-gradient(135deg,#0f1e2e,#0a1520)">
@@ -980,10 +986,11 @@ function LogList() {
           <button class="btn danger" onclick="deleteLog(${sel.id}, true)" style="flex:1">🗑️ 삭제</button>
         </div>
       </div>
+      </div>
     `;
   }
 
-  return `
+  const listHTML = `
     <div class="sec">
       <div class="filter-row">
         ${['', ...DEVICE_TYPES].map(d => `
@@ -1032,6 +1039,7 @@ function LogList() {
       `).join('')}
     </div>
   `;
+  return listHTML;
 }
 
 function setFilter(f) { filter = f; render(); }
@@ -1506,36 +1514,41 @@ if (window.visualViewport) {
   });
 }
 
-// 목록 상세뷰 스와이프 뒤로가기 (왼쪽 엣지 → 오른쪽, 애니메이션)
-let _swipeStartX = 0, _swipeStartY = 0, _swipeEl = null;
+// 목록 상세뷰 스와이프 뒤로가기 - iOS 스타일 두 레이어
+let _swipeStartX = 0, _swipeStartY = 0, _swipeFg = null, _swipeBg = null;
 document.addEventListener('touchstart', e => {
   _swipeStartX = e.touches[0].clientX;
   _swipeStartY = e.touches[0].clientY;
   if (currentTab === 1 && selectedLog && _swipeStartX < 35) {
-    _swipeEl = document.querySelector('#app .sec');
-    if (_swipeEl) _swipeEl.style.transition = 'none';
-  } else {
-    _swipeEl = null;
-  }
+    _swipeFg = document.getElementById('detail-fg');
+    _swipeBg = document.getElementById('list-bg');
+    if (_swipeFg) { _swipeFg.style.animation = 'none'; _swipeFg.style.transition = 'none'; }
+    if (_swipeBg) { _swipeBg.style.animation = 'none'; _swipeBg.style.transition = 'none'; }
+  } else { _swipeFg = null; _swipeBg = null; }
 }, { passive: true });
 document.addEventListener('touchmove', e => {
-  if (!_swipeEl) return;
-  const dx = e.touches[0].clientX - _swipeStartX;
-  if (dx > 0) _swipeEl.style.transform = `translateX(${dx}px)`;
+  if (!_swipeFg) return;
+  const dx = Math.max(0, e.touches[0].clientX - _swipeStartX);
+  _swipeFg.style.transform = `translateX(${dx}px)`;
+  const bgX = -30 + (dx / window.innerWidth) * 30;
+  if (_swipeBg) _swipeBg.style.transform = `translateX(${bgX}%)`;
 }, { passive: true });
 document.addEventListener('touchend', e => {
-  if (!_swipeEl) return;
+  if (!_swipeFg) return;
   const dx = e.changedTouches[0].clientX - _swipeStartX;
   const dy = e.changedTouches[0].clientY - _swipeStartY;
+  const easing = 'cubic-bezier(0.25,0.46,0.45,0.94)';
   if (dx > 80 && Math.abs(dy) < 80) {
-    _swipeEl.style.transition = 'transform 0.2s ease-out';
-    _swipeEl.style.transform = 'translateX(100%)';
-    setTimeout(() => { selectedLog = null; render(); }, 200);
+    _swipeFg.style.transition = `transform 0.25s ${easing}`;
+    _swipeFg.style.transform = 'translateX(100%)';
+    if (_swipeBg) { _swipeBg.style.transition = `transform 0.25s ${easing}`; _swipeBg.style.transform = 'translateX(0)'; }
+    setTimeout(() => { selectedLog = null; render(); }, 250);
   } else {
-    _swipeEl.style.transition = 'transform 0.25s ease-out';
-    _swipeEl.style.transform = 'translateX(0)';
+    _swipeFg.style.transition = `transform 0.3s ${easing}`;
+    _swipeFg.style.transform = 'translateX(0)';
+    if (_swipeBg) { _swipeBg.style.transition = `transform 0.3s ${easing}`; _swipeBg.style.transform = 'translateX(-30%)'; }
   }
-  _swipeEl = null;
+  _swipeFg = null; _swipeBg = null;
 }, { passive: true });
 
 function setChatMode(mode) {
