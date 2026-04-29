@@ -1529,11 +1529,12 @@ document.addEventListener('touchstart', e => {
 }, { passive: true });
 document.addEventListener('touchmove', e => {
   if (!_swipeFg) return;
+  e.preventDefault();
   const dx = Math.max(0, e.touches[0].clientX - _swipeStartX);
   _swipeFg.style.transform = `translateX(${dx}px)`;
   const bgX = -30 + (dx / window.innerWidth) * 30;
   if (_swipeBg) _swipeBg.style.transform = `translateX(${bgX}%)`;
-}, { passive: true });
+}, { passive: false });
 document.addEventListener('touchend', e => {
   if (!_swipeFg) return;
   const dx = e.changedTouches[0].clientX - _swipeStartX;
