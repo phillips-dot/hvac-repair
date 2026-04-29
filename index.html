@@ -21,13 +21,23 @@
   --warning: #f59e0b; --danger: #ef4444;
   --text: #dde6f0; --muted: #4a6178; --subtle: #1e3248;
 }
-html, body { margin: 0; padding: 0; overscroll-behavior: none; }
+html { height: 100%; overflow: hidden; margin: 0; padding: 0; }
 body {
   background: var(--bg); color: var(--text);
   font-family: 'Noto Sans KR', -apple-system, sans-serif;
-  padding-bottom: calc(80px + env(safe-area-inset-bottom));
+  padding-bottom: env(safe-area-inset-bottom);
   padding-top: env(safe-area-inset-top);
-  min-height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  overscroll-behavior: none;
+}
+#app {
+  flex: 1; min-height: 0;
+  overflow-y: auto; overflow-x: hidden;
+  display: flex; flex-direction: column;
 }
 .header {
   background: linear-gradient(160deg, #050a14, #0a1a2e);
@@ -45,7 +55,7 @@ body {
   cursor: pointer; font-family: inherit;
 }
 .tab.active { color: var(--accent); font-weight: 800; border-bottom-color: var(--accent); }
-.sec { padding: 14px; }
+.sec { padding: 14px 14px calc(20px + env(safe-area-inset-bottom)); }
 .card {
   background: var(--card); border: 1px solid var(--border);
   border-radius: 12px; padding: 14px; margin-bottom: 10px;
@@ -157,6 +167,7 @@ textarea { min-height: 72px; resize: vertical; }
 
 /* AI 도우미 채팅 UI */
 .chat-container {
+  flex: 1; min-height: 0;
   display: flex; flex-direction: column;
 }
 .chat-messages {
@@ -208,8 +219,9 @@ textarea { min-height: 72px; resize: vertical; }
 }
 .msg-cases strong { color: var(--accent); }
 .chat-input-area {
+  flex-shrink: 0;
   background: var(--card); border-top: 1px solid var(--border);
-  padding: 6px 8px calc(6px + env(safe-area-inset-bottom)) 8px; position: sticky; bottom: 0;
+  padding: 6px 8px calc(6px + env(safe-area-inset-bottom)) 8px;
 }
 .chat-input-row {
   display: flex; gap: 6px; align-items: flex-end;
@@ -257,6 +269,7 @@ textarea { min-height: 72px; resize: vertical; }
 }
 .quick-q-btn:hover { border-color: var(--accent); }
 .chat-toolbar {
+  flex-shrink: 0;
   display: flex; gap: 6px; padding: 5px 8px;
   overflow-x: auto; background: var(--card);
   border-bottom: 1px solid var(--border);
@@ -444,8 +457,8 @@ document.querySelectorAll('.tab').forEach(btn => {
       editingLogId = null;
     }
     currentTab = newTab;
-    document.body.style.overflow = '';
-    if (newTab !== 2) resetChatInputPosition();
+    const appEl = document.getElementById('app');
+    if (appEl) { appEl.style.overflow = ''; appEl.style.height = ''; }
     document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     selectedLog = null;
@@ -1420,53 +1433,38 @@ function getChatPlaceholder() {
 
 function updateChatLayout() {
   if (currentTab !== 2) return;
-  window.scrollTo(0, 0);
   const vp = window.visualViewport;
-  const vpHeight = vp ? vp.height : window.innerHeight;
-  const keyboardHeight = vp ? Math.max(0, window.innerHeight - vp.height - vp.offsetTop) : 0;
-  const inputArea = document.querySelector('.chat-input-area');
-  if (inputArea) {
-    inputArea.style.position = 'fixed';
-    inputArea.style.bottom = keyboardHeight + 'px';
-    inputArea.style.left = '0';
-    inputArea.style.right = '0';
-    inputArea.style.zIndex = '100';
-    inputArea.style.paddingBottom = keyboardHeight > 0 ? '6px' : '';
-  }
-  const container = document.querySelector('.chat-container');
-  if (container) {
-    const containerTop = container.getBoundingClientRect().top;
-    container.style.height = Math.max(50, vpHeight - containerTop) + 'px';
-    container.style.overflow = 'hidden';
+  if (!vp) return;
+  const keyboardHeight = Math.max(0, window.innerHeight - vp.height - vp.offsetTop);
+  const app = document.getElementById('app');
+  if (app) {
+    if (keyboardHeight > 50) {
+      const topH = (document.querySelector('.header')?.offsetHeight || 0) +
+                   (document.querySelector('.tabs')?.offsetHeight || 0);
+      app.style.height = Math.max(100, vp.height - topH) + 'px';
+    } else {
+      app.style.height = '';
+    }
   }
   const msgs = document.querySelector('#chat-messages');
-  const inputH = inputArea ? inputArea.offsetHeight : 60;
-  if (msgs) {
-    msgs.style.paddingBottom = (inputH + 4) + 'px';
-    if (keyboardHeight > 0) msgs.scrollTop = msgs.scrollHeight;
-  }
+  if (msgs && keyboardHeight > 50) msgs.scrollTop = msgs.scrollHeight;
 }
 
 function resetChatInputPosition() {
-  const inputArea = document.querySelector('.chat-input-area');
-  if (inputArea) {
-    inputArea.style.position = '';
-    inputArea.style.bottom = '';
-    inputArea.style.left = '';
-    inputArea.style.right = '';
-  }
+  const app = document.getElementById('app');
+  if (app) { app.style.overflow = ''; app.style.height = ''; }
 }
 
 function initChatUI() {
-  document.body.style.overflow = 'hidden';
+  const app = document.getElementById('app');
+  if (app) app.style.overflow = chatState.mode === 'analyze' ? '' : 'hidden';
   setTimeout(() => {
-    updateChatLayout();
     const msgs = $('#chat-messages');
     if (msgs) msgs.scrollTop = msgs.scrollHeight;
     const input = $('#chat-input');
     if (input) {
       input.addEventListener('focus', () => setTimeout(updateChatLayout, 150));
-      input.addEventListener('blur', () => setTimeout(updateChatLayout, 350));
+      input.addEventListener('blur', () => setTimeout(updateChatLayout, 300));
     }
     if (msgs) {
       msgs.addEventListener('touchstart', () => {
