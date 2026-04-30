@@ -343,8 +343,13 @@ hr { border: none; border-top: 1px solid var(--border); margin: 7px 0; }
 <body>
 
 <div class="header">
-  <h1>❄️ 냉동공조 수리 기록</h1>
-  <p>HVAC REPAIR LOG · AI DATA ANALYSIS</p>
+  <div style="display:flex;justify-content:space-between;align-items:flex-start">
+    <div>
+      <h1>❄️ 냉동공조 수리 기록</h1>
+      <p>HVAC REPAIR LOG · AI DATA ANALYSIS</p>
+    </div>
+    <span id="sync-status" style="font-size:10px;margin-top:6px;letter-spacing:0.5px"></span>
+  </div>
 </div>
 
 <div class="tabs">
@@ -379,6 +384,48 @@ const DB_VERSION = 1;
 const DB_STORE = 'data';
 let _db = null;
 let _logsCache = [];
+
+// ── 서버 동기화 (Cloudflare D1) ──────────────────────────
+function showSyncStatus(status) {
+  const el = document.getElementById('sync-status');
+  if (!el) return;
+  const s = { syncing: ['동기화 중…','var(--warning)'], synced: ['☁ 저장됨','var(--success)'], error: ['동기화 실패','var(--danger)'], offline: ['','var(--muted)'] }[status];
+  if (!s) return;
+  el.textContent = s[0]; el.style.color = s[1];
+  if (status === 'synced') setTimeout(() => { el.textContent = ''; }, 3000);
+}
+
+async function serverSave(log) {
+  showSyncStatus('syncing');
+  try {
+    const res = await fetch('/api/logs', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(log) });
+    if (!res.ok) throw new Error();
+    showSyncStatus('synced');
+  } catch { showSyncStatus('error'); }
+}
+
+async function serverDelete(id) {
+  try { await fetch('/api/logs/' + id, { method: 'DELETE' }); } catch {}
+}
+
+async function loadFromServer() {
+  try {
+    const res = await fetch('/api/logs');
+    if (!res.ok) return;
+    const server = await res.json();
+    if (!Array.isArray(server) || server.length === 0) return;
+    const local = getLogs();
+    const map = {};
+    local.forEach(l => { map[l.id] = l; });
+    server.forEach(s => {
+      if (!map[s.id] || (s.updatedAt && (!map[s.id].updatedAt || s.updatedAt >= map[s.id].updatedAt))) map[s.id] = s;
+    });
+    const merged = Object.values(map).sort((a, b) => b.id - a.id);
+    _logsCache = merged;
+    await dbSet('logs', merged);
+    render();
+  } catch {}
+}
 
 function openDB() {
   return new Promise((resolve, reject) => {
@@ -429,6 +476,7 @@ async function initApp() {
   _logsCache = logs;
   render();
   showInstallGuide();
+  loadFromServer();
 }
 
 // ── 유틸 ─────────────────────────────────────────────────
@@ -835,11 +883,15 @@ function viewPhoto(src) {
 function saveForm() {
   const f = formState;
   const logs = getLogs();
+  let saved;
   if (editingLogId !== null) {
-    saveLogs(logs.map(l => l.id === editingLogId ? { ...f, id: editingLogId, updatedAt: new Date().toISOString() } : l));
+    saved = { ...f, id: editingLogId, updatedAt: new Date().toISOString() };
+    saveLogs(logs.map(l => l.id === editingLogId ? saved : l));
   } else {
-    saveLogs([{ ...f, id: Date.now(), createdAt: new Date().toISOString() }, ...logs]);
+    saved = { ...f, id: Date.now(), createdAt: new Date().toISOString() };
+    saveLogs([saved, ...logs]);
   }
+  serverSave(saved);
   formState = null;
   editingLogId = null;
   currentTab = 1;
@@ -1065,8 +1117,8 @@ function editLog(id) {
 
 function deleteLog(id, fromDetail) {
   if (!confirm('삭제할까요?')) return;
-  const updated = getLogs().filter(l => l.id !== id);
-  saveLogs(updated);
+  saveLogs(getLogs().filter(l => l.id !== id));
+  serverDelete(id);
   if (fromDetail) selectedLog = null;
   render();
 }
