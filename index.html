@@ -350,8 +350,8 @@ hr { border: none; border-top: 1px solid var(--border); margin: 7px 0; }
 <div class="tabs">
   <button class="tab active" data-tab="0">📝 기록</button>
   <button class="tab" data-tab="1">📋 목록</button>
-  <button class="tab" data-tab="2">💬 AI</button>
-  <button class="tab" data-tab="3">🏪 거래처</button>
+  <button class="tab" data-tab="2">🏪 거래처</button>
+  <button class="tab" data-tab="3">💬 AI</button>
   <button class="tab" data-tab="4">📊 통계</button>
 </div>
 
@@ -1324,7 +1324,7 @@ function Clients() {
     <div class="sec">
       <div style="color:var(--muted);font-size:11px;margin-bottom:10px">총 ${clients.length}개 거래처</div>
       ${clients.map(c => `
-        <div class="card" style="cursor:pointer" onclick="viewClient(${JSON.stringify(c.shopName)})">
+        <div class="card" style="cursor:pointer" data-shop="${esc(c.shopName)}" onclick="viewClient(this.dataset.shop)">
           <div style="font-size:16px;font-weight:800;color:var(--text);margin-bottom:6px">🏪 ${esc(c.shopName)}</div>
           ${c.phone ? `
             <div style="font-size:13px;margin-bottom:4px">
@@ -1591,7 +1591,7 @@ function getChatPlaceholder() {
 }
 
 function updateChatLayout() {
-  if (currentTab !== 2) return;
+  if (currentTab !== 3) return;
   const vp = window.visualViewport;
   if (!vp) return;
   const keyboardHeight = Math.max(0, window.innerHeight - vp.height - vp.offsetTop);
@@ -1639,7 +1639,7 @@ function initChatUI() {
 
 if (window.visualViewport) {
   window.visualViewport.addEventListener('resize', () => {
-    if (currentTab === 2) updateChatLayout();
+    if (currentTab === 3) updateChatLayout();
   });
 }
 
@@ -1648,7 +1648,8 @@ let _swipeStartX = 0, _swipeStartY = 0, _swipeFg = null, _swipeBg = null;
 document.addEventListener('touchstart', e => {
   _swipeStartX = e.touches[0].clientX;
   _swipeStartY = e.touches[0].clientY;
-  if (currentTab === 1 && selectedLog && _swipeStartX < 35) {
+  const _hasDetail = (currentTab === 1 && selectedLog) || (currentTab === 2 && selectedClient);
+  if (_hasDetail && _swipeStartX < 35) {
     _swipeFg = document.getElementById('detail-fg');
     _swipeBg = document.getElementById('list-bg');
     if (_swipeFg) { _swipeFg.style.animation = 'none'; _swipeFg.style.transition = 'none'; }
@@ -1672,7 +1673,7 @@ document.addEventListener('touchend', e => {
     _swipeFg.style.transition = `transform 0.25s ${easing}`;
     _swipeFg.style.transform = 'translateX(100%)';
     if (_swipeBg) { _swipeBg.style.transition = `transform 0.25s ${easing}`; _swipeBg.style.transform = 'translateX(0)'; }
-    setTimeout(() => { selectedLog = null; render(); }, 250);
+    setTimeout(() => { selectedLog = null; selectedClient = null; render(); }, 250);
   } else {
     _swipeFg.style.transition = `transform 0.3s ${easing}`;
     _swipeFg.style.transform = 'translateX(0)';
@@ -1982,9 +1983,9 @@ function editAndGoToForm(msgId) {
 
 // ── 렌더링 ────────────────────────────────────────────────
 function render() {
-  const views = { 0: LogForm, 1: LogList, 2: AIAssistant, 3: Clients, 4: Stats };
+  const views = { 0: LogForm, 1: LogList, 2: Clients, 3: AIAssistant, 4: Stats };
   $('#app').innerHTML = views[currentTab]();
-  if (currentTab === 2) initChatUI();
+  if (currentTab === 3) initChatUI();
 }
 
 // ── PWA 설치 안내 ────────────────────────────────────────
