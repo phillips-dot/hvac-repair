@@ -874,33 +874,38 @@ function LogList() {
       </div>
       ${filtered.length === 0 ? '<div class="empty">기록이 없습니다.</div>' : ''}
       ${filtered.map(log => `
-        <div class="log-card" onclick="viewLog(${log.id})">
-          <div class="sb" style="margin-bottom:6px">
+        <div class="log-card" style="border-color:rgba(245,158,11,0.35);border-left:3px solid var(--warning);padding:12px 13px" onclick="viewLog(${log.id})">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
             <div style="flex:1;min-width:0">
               ${['냉동창고', '기타 냉동공조'].includes(log.deviceType)
                 ? `<div style="font-size:14px;font-weight:800;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${[log.coolerHP ? '쿨러 '+log.coolerHP+'HP'+(log.coolerMaker ? ' ('+log.coolerMaker+')' : '') : '', log.outdoorHP ? '실외기 '+log.outdoorHP+'HP'+(log.outdoorMaker ? ' ('+log.outdoorMaker+')' : '') : '', log.compHP ? '콤프 '+log.compHP+([log.compType, log.compMaker].filter(Boolean).length ? ' ('+[log.compType, log.compMaker].filter(Boolean).join('/')+')' : '') : ''].filter(Boolean).join(' / ') || '마력 미입력'}</div>`
-                : log.model ? `<div style="font-size:15px;font-weight:800;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(log.model)}</div>` : `<div style="font-size:15px;font-weight:800;color:var(--muted)">모델명 없음</div>`
+                : log.model ? `<div style="font-size:15px;font-weight:800;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(log.model)}</div>`
+                            : `<div style="font-size:15px;font-weight:800;color:var(--muted)">모델명 없음</div>`
               }
-              ${log.shopName ? `<div style="font-size:13px;color:var(--accent);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">🏪 ${esc(log.shopName)}</div>` : ''}
-              ${log.location ? `<div style="font-size:12px;color:var(--muted);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">📍 ${esc(log.location)}</div>` : ''}
+              ${log.shopName ? `<div style="font-size:13px;color:var(--accent);margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">🏪 ${esc(log.shopName)}</div>` : ''}
             </div>
-            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0;margin-left:8px">
-              <span style="color:var(--muted);font-size:11px">${fmt(log.date)}</span>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;margin-left:10px">
+              <span style="color:var(--warning);font-size:12px;font-weight:700">${fmt(log.date)}</span>
               ${log.photos && log.photos.length > 0 ? `<span style="color:var(--accent);font-size:10px">📷 ${log.photos.length}</span>` : ''}
             </div>
           </div>
-          <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px">
+          <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px">
             <span class="tag accent">${esc(log.deviceType)}</span>
             ${log.faultType ? `<span class="tag warn">${esc(log.faultType)}</span>` : ''}
           </div>
-          <div style="font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(log.symptom)}</div>
+          ${log.symptom ? `
+            <div style="background:rgba(245,158,11,0.08);border-left:3px solid var(--warning);border-radius:4px;padding:8px 10px;margin-bottom:8px">
+              <div style="font-size:10px;color:var(--warning);font-weight:700;letter-spacing:0.5px;margin-bottom:3px">⚠️ 증상</div>
+              <div style="font-size:14px;color:var(--text);line-height:1.45;word-break:break-word">${esc(log.symptom)}</div>
+            </div>
+          ` : ''}
           ${[...(log.parts||[]), log.partsCustom].filter(Boolean).length > 0 ? `
-            <div style="margin-top:7px;padding:6px 9px;background:rgba(0,212,255,0.07);border-left:3px solid var(--accent);border-radius:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-              <span style="font-size:10px;color:var(--accent);font-weight:700;letter-spacing:0.5px">교체부품</span>
+            <div style="padding:7px 10px;background:rgba(0,212,255,0.07);border-left:3px solid var(--accent);border-radius:4px;margin-bottom:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+              <span style="font-size:10px;color:var(--accent);font-weight:700;letter-spacing:0.5px">🔩 교체부품</span>
               <span style="font-size:13px;color:var(--text);margin-left:6px">${esc([...(log.parts||[]), log.partsCustom].filter(Boolean).join(', '))}</span>
             </div>
           ` : ''}
-          <div class="sb" style="justify-content:flex-end;margin-top:10px;gap:6px">
+          <div style="display:flex;justify-content:flex-end;gap:6px">
             <button class="btn-sm" onclick="event.stopPropagation();editLog(${log.id})">✏️ 수정</button>
             <button class="btn-sm danger" onclick="event.stopPropagation();deleteLog(${log.id})">🗑️ 삭제</button>
           </div>
