@@ -351,8 +351,8 @@ hr { border: none; border-top: 1px solid var(--border); margin: 7px 0; }
   <button class="tab active" data-tab="0">📝 기록</button>
   <button class="tab" data-tab="1">📋 목록</button>
   <button class="tab" data-tab="2">💬 AI</button>
-  <button class="tab" data-tab="3">📊 통계</button>
-  <button class="tab" data-tab="4">🏪 거래처</button>
+  <button class="tab" data-tab="3">🏪 거래처</button>
+  <button class="tab" data-tab="4">📊 통계</button>
 </div>
 
 <div id="install-banner" class="install-banner">
@@ -448,6 +448,7 @@ const esc = (str) => String(str || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<
 
 let currentTab = 0;
 let selectedLog = null;
+let selectedClient = null;
 let formState = null;
 let editingLogId = null;
 let filter = '';
@@ -468,6 +469,7 @@ document.querySelectorAll('.tab').forEach(btn => {
     document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     selectedLog = null;
+    selectedClient = null;
     render();
   });
 });
@@ -1288,6 +1290,16 @@ function saveChatHistory() {
 }
 
 // ── 거래처 ───────────────────────────────────────────────
+function viewClient(shopName) { selectedClient = shopName; render(); }
+
+function viewLogFromClient(id) {
+  selectedLog = getLogs().find(l => l.id === id);
+  selectedClient = null;
+  currentTab = 1;
+  document.querySelectorAll('.tab').forEach((b, i) => b.classList.toggle('active', i === 1));
+  render();
+}
+
 function Clients() {
   const logs = getLogs().filter(l => l.shopName);
   if (logs.length === 0) {
@@ -1308,19 +1320,19 @@ function Clients() {
 
   const clients = Object.values(map).sort((a, b) => b.lastDate.localeCompare(a.lastDate));
 
-  return `
+  const listHTML = `
     <div class="sec">
       <div style="color:var(--muted);font-size:11px;margin-bottom:10px">총 ${clients.length}개 거래처</div>
       ${clients.map(c => `
-        <div class="card">
+        <div class="card" style="cursor:pointer" onclick="viewClient(${JSON.stringify(c.shopName)})">
           <div style="font-size:16px;font-weight:800;color:var(--text);margin-bottom:6px">🏪 ${esc(c.shopName)}</div>
           ${c.phone ? `
             <div style="font-size:13px;margin-bottom:4px">
-              📞 <a href="tel:${esc(c.phone)}" style="color:var(--accent);text-decoration:none;font-weight:700">${esc(c.phone)}</a>
+              📞 <a href="tel:${esc(c.phone)}" style="color:var(--accent);text-decoration:none;font-weight:700" onclick="event.stopPropagation()">${esc(c.phone)}</a>
             </div>` : ''}
           ${c.location ? `
             <div style="font-size:12px;color:var(--muted);margin-bottom:8px">📍 ${esc(c.location)}</div>
-            <div style="display:flex;gap:8px;margin-bottom:8px">
+            <div style="display:flex;gap:8px;margin-bottom:8px" onclick="event.stopPropagation()">
               <a href="https://map.kakao.com/link/search/${encodeURIComponent(c.location)}" target="_blank" style="text-decoration:none;flex:1">
                 <button class="btn-sm" style="width:100%;text-align:center;background:rgba(255,193,7,0.15);color:#FEE500;border-color:rgba(255,193,7,0.4)">🗺️ 카카오맵</button>
               </a>
@@ -1330,12 +1342,76 @@ function Clients() {
             </div>` : ''}
           <div style="display:flex;justify-content:space-between;align-items:center">
             <span style="font-size:11px;color:var(--muted)">최근 방문 ${fmt(c.lastDate)}</span>
-            <span style="background:rgba(0,212,255,0.12);color:var(--accent);border:1px solid rgba(0,212,255,0.25);border-radius:20px;padding:2px 10px;font-size:11px;font-weight:700">수리 ${c.visits}회</span>
+            <span style="background:rgba(0,212,255,0.12);color:var(--accent);border:1px solid rgba(0,212,255,0.25);border-radius:20px;padding:2px 10px;font-size:11px;font-weight:700">수리 ${c.visits}회 ›</span>
           </div>
         </div>
       `).join('')}
     </div>
   `;
+
+  if (selectedClient && map[selectedClient]) {
+    const c = map[selectedClient];
+    const clientLogs = logs.filter(l => l.shopName === selectedClient)
+      .sort((a, b) => b.date > a.date ? 1 : -1);
+
+    const detailHTML = `
+      <div class="sec">
+        <button class="btn-sm back-btn" onclick="selectedClient=null; render()">← 거래처</button>
+        <div class="card" style="border-color:rgba(0,212,255,0.25);background:linear-gradient(135deg,#0f1e2e,#0a1520);margin-bottom:14px">
+          <div style="font-size:19px;font-weight:800;color:var(--text);margin-bottom:6px">🏪 ${esc(c.shopName)}</div>
+          ${c.phone ? `<div style="font-size:13px;margin-bottom:6px">📞 <a href="tel:${esc(c.phone)}" style="color:var(--accent);text-decoration:none;font-weight:700">${esc(c.phone)}</a></div>` : ''}
+          ${c.location ? `
+            <div style="font-size:12px;color:var(--text);margin-bottom:10px">📍 ${esc(c.location)}</div>
+            <div style="display:flex;gap:8px;margin-bottom:10px">
+              <a href="https://map.kakao.com/link/search/${encodeURIComponent(c.location)}" target="_blank" style="text-decoration:none;flex:1">
+                <button class="btn-sm" style="width:100%;text-align:center;background:rgba(255,193,7,0.15);color:#FEE500;border-color:rgba(255,193,7,0.4)">🗺️ 카카오맵</button>
+              </a>
+              <a href="tmap://search?name=${encodeURIComponent(c.location)}" style="text-decoration:none;flex:1">
+                <button class="btn-sm" style="width:100%;text-align:center;background:rgba(0,122,255,0.15);color:#4A9EFF;border-color:rgba(0,122,255,0.4)">🧭 T맵</button>
+              </a>
+            </div>` : ''}
+          <div style="display:flex;gap:16px">
+            <span style="font-size:11px;color:var(--muted)">총 수리 <strong style="color:var(--accent)">${clientLogs.length}회</strong></span>
+            <span style="font-size:11px;color:var(--muted)">최근 방문 <strong style="color:var(--text)">${fmt(c.lastDate)}</strong></span>
+          </div>
+        </div>
+        <div style="font-size:11px;color:var(--muted);letter-spacing:1px;font-weight:700;margin-bottom:8px;text-transform:uppercase">수리 내역</div>
+        ${clientLogs.map(log => `
+          <div class="log-card" onclick="viewLogFromClient(${log.id})">
+            <div class="sb" style="margin-bottom:6px">
+              <div style="flex:1;min-width:0">
+                ${['냉동창고', '기타 냉동공조'].includes(log.deviceType)
+                  ? `<div style="font-size:14px;font-weight:800;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${[log.coolerHP ? '쿨러 '+log.coolerHP+'HP'+(log.coolerMaker ? ' ('+log.coolerMaker+')' : '') : '', log.outdoorHP ? '실외기 '+log.outdoorHP+'HP'+(log.outdoorMaker ? ' ('+log.outdoorMaker+')' : '') : ''].filter(Boolean).join(' / ') || '냉동공조'}</div>`
+                  : log.model ? `<div style="font-size:15px;font-weight:800;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(log.model)}</div>`
+                              : `<div style="font-size:15px;font-weight:800;color:var(--muted)">모델명 없음</div>`
+                }
+              </div>
+              <span style="color:var(--muted);font-size:11px;flex-shrink:0;margin-left:8px">${fmt(log.date)}</span>
+            </div>
+            <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px">
+              <span class="tag accent">${esc(log.deviceType)}</span>
+              ${log.faultType ? `<span class="tag warn">${esc(log.faultType)}</span>` : ''}
+            </div>
+            ${log.symptom ? `<div style="font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(log.symptom)}</div>` : ''}
+            ${[...(log.parts||[]), log.partsCustom].filter(Boolean).length > 0 ? `
+              <div style="margin-top:7px;padding:6px 9px;background:rgba(0,212,255,0.07);border-left:3px solid var(--accent);border-radius:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+                <span style="font-size:10px;color:var(--accent);font-weight:700">교체부품</span>
+                <span style="font-size:13px;color:var(--text);margin-left:6px">${esc([...(log.parts||[]), log.partsCustom].filter(Boolean).join(', '))}</span>
+              </div>
+            ` : ''}
+            ${log.cost ? `<div style="margin-top:6px;font-size:12px;color:var(--success);font-weight:700">💰 ${Number(log.cost).toLocaleString()}원</div>` : ''}
+          </div>
+        `).join('')}
+      </div>
+    `;
+
+    return `
+      <div id="list-bg" class="nav-layer">${listHTML}</div>
+      <div id="detail-fg" class="nav-layer">${detailHTML}</div>
+    `;
+  }
+
+  return listHTML;
 }
 
 function AIAssistant() {
@@ -1906,7 +1982,7 @@ function editAndGoToForm(msgId) {
 
 // ── 렌더링 ────────────────────────────────────────────────
 function render() {
-  const views = { 0: LogForm, 1: LogList, 2: AIAssistant, 3: Stats, 4: Clients };
+  const views = { 0: LogForm, 1: LogList, 2: AIAssistant, 3: Clients, 4: Stats };
   $('#app').innerHTML = views[currentTab]();
   if (currentTab === 2) initChatUI();
 }
